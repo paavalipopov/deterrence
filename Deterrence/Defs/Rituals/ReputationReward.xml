@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <RitualAttachableOutcomeEffectDef MayRequire="Ludeon.RimWorld.Ideology">
+    <defName>Antiwealth_ReputationBoost</defName>
+    <label>reputation boost</label>
+    <workerClass>Deterrence.RitualReputation</workerClass>
+    <onlyPositiveOutcomes>true</onlyPositiveOutcomes>
+    <effectDesc>a positive ritual outcome strengthens the colony's reputation. Its value is adjustable in Deterrence settings.</effectDesc>
+    <letterInfoText>The ritual strengthened the colony's reputation.</letterInfoText>
+  </RitualAttachableOutcomeEffectDef>
+</Defs>

@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Example only: copy this file into Defs and replace the placeholder condition name. -->
-<Defs>
-  <Antiwealth.AntiwealthConditionDef>
-    <defName>Antiwealth_ExampleModdedCondition</defName>
-    <conditionDefName>ReplaceWithAnActualGameConditionDefName</conditionDefName>
-    <initialDailyGain>3000</initialDailyGain>
-  </Antiwealth.AntiwealthConditionDef>
-</Defs>

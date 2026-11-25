@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <MainButtonDef>
+    <defName>Deterrence</defName>
+    <label>deterrence</label>
+    <description>View remains, reputation, hazards, and adjusted threat wealth.</description>
+    <tabWindowClass>Deterrence.MainTabWindow_Deterrence</tabWindowClass>
+    <buttonVisible>true</buttonVisible>
+    <minimized>true</minimized>
+    <iconPath>UI/Buttons/MainButtons/Deterrence</iconPath>
+    <order>71</order>
+  </MainButtonDef>
+</Defs>
