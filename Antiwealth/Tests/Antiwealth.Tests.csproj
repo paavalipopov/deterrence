@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../Source/CreditMath.cs" Link="CreditMath.cs" />
+    <Compile Include="../Source/RuleMath.cs" Link="RuleMath.cs" />
+    <Compile Include="../Source/IslandLandmass.cs" Link="IslandLandmass.cs" />
+    <Compile Include="../Source/HistoryMath.cs" Link="HistoryMath.cs" />
+    <Compile Include="../Source/RuleGrouping.cs" Link="RuleGrouping.cs" />
+    <Compile Include="../Source/PreviewMath.cs" Link="PreviewMath.cs" />
+    <Compile Include="../Source/SurgeryOutcome.cs" Link="SurgeryOutcome.cs" />
+    <Compile Include="../Source/LedgerValues.cs" Link="LedgerValues.cs" />
+    <Compile Include="../Source/MeterGrouping.cs" Link="MeterGrouping.cs" />
+    <Compile Include="../Source/MeterTree.cs" Link="MeterTree.cs" />
+    <Compile Include="../Source/ShareMath.cs" Link="ShareMath.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="ExampleExport.cs" />
+    <Compile Include="ViolenceExample.cs" />
+  </ItemGroup>
+</Project>

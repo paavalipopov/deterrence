@@ -1,5 +1,7 @@
 # Deterrence
 
+![Deterrence Workshop cover](Antiwealth/About/Preview.png)
+
 Deterrence changes how RimWorld sizes outside threats. A wealthy colony surrounded by toxic fallout and the graves of failed raiders can attract a smaller raid than an equally wealthy colony on safe ground. Your stockpiles keep their market value.
 
 **RimWorld 1.6 · Requires Harmony · Core features work without DLC**
@@ -14,9 +16,11 @@ Deterrence changes how RimWorld sizes outside threats. A wealthy colony surround
 
 Open the shield beside **World** to see how much each meter contributes and which bodies, events, or hazards account for it. In mod settings you can tune weights and growth curves, adjust biome and island factors, and give different factions their own response to the same colony.
 
+![The in-game meters show 7,430 deterrence from remains, reputation, and hazards.](Workshop/Meters.png)
+
 Graves, sarcophagi, and stockpiles also gain three filters under **Storage → Corpses → Humanlike corpses**. Choose which corpses to accept by status at death, current faction relations, or individual faction. All three start on **Any**.
 
-## Install 0.11.0
+## Install 0.11.1
 
 1. Download this repository using **Code → Download ZIP** and extract it.
 2. Copy the inner `Antiwealth` folder into your RimWorld `Mods` folder. The installed path should end in `Mods/Antiwealth/About/About.xml`.

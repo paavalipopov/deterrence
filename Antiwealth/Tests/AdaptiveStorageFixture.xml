@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef MayRequire="adaptive.storage.framework" ParentName="AdaptiveStorageBase">
+    <defName>DeterrenceTestCorpseShelf</defName>
+    <label>test corpse shelf</label>
+    <description>Isolated gameplay test fixture.</description>
+    <graphicData>
+      <texPath>Things/Building/Furniture/ShelfSmall</texPath>
+      <graphicClass>Graphic_Multi</graphicClass>
+    </graphicData>
+    <statBases><MaxHitPoints>100</MaxHitPoints><WorkToBuild>50</WorkToBuild></statBases>
+    <costList><WoodLog>10</WoodLog></costList>
+    <building>
+      <fixedStorageSettings><filter><categories><li>CorpsesHumanlike</li></categories></filter></fixedStorageSettings>
+      <maxItemsInCell>2</maxItemsInCell>
+    </building>
+  </ThingDef>
+  <AdaptiveStorage.GraphicsDef MayRequire="adaptive.storage.framework">
+    <defName>DeterrenceTestCorpseShelfGraphics</defName>
+    <targetDef>DeterrenceTestCorpseShelf</targetDef>
+    <showBaseGraphic>true</showBaseGraphic>
+    <graphics>
+      <li><minimumStackCount>0</minimumStackCount></li>
+    </graphics>
+  </AdaptiveStorage.GraphicsDef>
+</Defs>
