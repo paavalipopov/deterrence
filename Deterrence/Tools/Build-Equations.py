@@ -92,16 +92,16 @@ def growth(square_root):
 
 def fade(linear):
     equation = Equation()
-    equation.text("Balance = " if linear else "Remaining = ")
-    equation.text("B" if linear else "B₀", VARIABLE)
-    equation.text(" × (1 − ")
+    equation.text("Remaining = ")
+    equation.text("H₀", VARIABLE)
+    equation.text(" (1 − ")
     if not linear:
         equation.text("3")
-    equation.text("u", VARIABLE)
+    equation.text("x", VARIABLE)
     if not linear:
         equation.text("2", POWER, baseline=15)
         equation.text(" + 2")
-        equation.text("u", VARIABLE)
+        equation.text("x", VARIABLE)
         equation.text("3", POWER, baseline=15)
     equation.text(")")
     equation.save("FadeLinear" if linear else "FadeCubic")
@@ -155,9 +155,9 @@ def curve_controls():
     equation.text(" H(t) dt", VARIABLE)
     equation.save("HistoryArea")
 
-    for name, amount, reference in (("FadeDuration", "B₀", "ref. balance"), ("HistoryDuration", "A", "ref. area")):
+    for name, amount, reference in (("FadeDuration", "H₀", "ref. balance"), ("HistoryDuration", "A", "ref. area")):
         equation = Equation()
-        equation.text("F = L ", VARIABLE)
+        equation.text("T = D ", VARIABLE)
         equation.text("(", PARENTHESIS, baseline=24)
         equation.fraction(amount, reference)
         equation.text(")", PARENTHESIS, baseline=24)
@@ -227,9 +227,9 @@ if __name__ == "__main__":
     terrain_and_colony()
     curve_controls()
     equation = Equation()
-    equation.text("u", VARIABLE)
+    equation.text("x", VARIABLE)
     equation.text(" = ")
-    equation.fraction("elapsed days", "F")
+    equation.fraction("t", "T")
     equation.save("FadeProgress")
     for name, difference in (("HeatExposure", "outdoor °C − threshold °C"),
                              ("ColdExposure", "threshold °C − outdoor °C")):

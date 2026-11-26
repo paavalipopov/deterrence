@@ -1,4 +1,4 @@
-# Deterrence 0.12.0
+# Deterrence 0.12.1
 
 Danger and its lingering reputation reduce the wealth used to size outside threats. Actual asset prices stay unchanged.
 
@@ -45,6 +45,8 @@ Open meters from the shield beside **World**, or use **Formula > Options > Open 
 **Hazard growth** uses one curve with two timing options. **By total exposure** reaches a given slowdown at a fixed raw exposure; stronger hazards reach it sooner. **By daily rate** gives stronger hazards more time at their starting pace. Its reference is 2,000 points/day. With a 10-day slowdown setting and logarithmic growth, a 1,000/day hazard reaches half speed in 7.1 days and a 4,000/day hazard in 14.1 days. **Growth shape** ranges from 0 (linear) through 0.5 (square root) to 1 (logarithmic).
 
 **Fading** uses the same smooth cubic for every new fade. **Starting balance** sets duration from ending points. **Hazard history** uses the integral of an ongoing hazard's active balance in point-days. A new active episode starts a fresh area at its surviving balance. Instant Reputation gains and removed bodies use the balance calibration. At the reference value a fade takes 10 days by default. At exponent 0 every fade takes the reference duration; at 0.5, four times the balance or area gives twice the duration.
+
+H is the deterrence balance. During growth, t counts active days and T sets the slowdown time. During fading, H₀ is the starting balance, t counts days since fading began, and T is the time to zero. The fraction elapsed is x = t/T. Each mode uses D for its own reference duration.
 
 Existing settings and presets keep their exposure scale, growth shape and reference duration. A fade in progress completes on its saved clock and shape. Hazards already active in older saves use starting balance for their first fade because their past area was never recorded. The buildup-rate clock starts tracking from the upgrade. **Preview inputs** change only the example graph.
 

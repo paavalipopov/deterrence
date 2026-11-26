@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.12.1
+
+- Put daily gain and remaining balance first on the Curves tab. Growth and fading now share balance and time notation. Formula notes have a divider or wrap onto a separate line.
+- Replaced the Workshop cover with a black-and-white woodcut.
+
 ## 0.12.0
 
 - Renamed the mod folder, assembly, and package ID to Deterrence. Enable it once after upgrading. Existing colony data, burial rules, settings, and presets carry over.

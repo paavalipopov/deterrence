@@ -97,6 +97,8 @@ Settings follow **Formula, Remains, Reputation, Hazards, Curves, Summary, Misc, 
 
 Default fading is a smooth cubic curve. **10,000 deterrence lasts 10 days**, scaled by the square root of the ending amount: four times as much lasts twice as long. The duration exponent adjusts this scaling. Switch to **Hazard history** to use an ongoing hazard’s area in point-days. The reference area defaults to 20,000 point-days. Reputation and removed bodies use starting balance. A fade in progress keeps its saved shape and duration.
 
+H is the deterrence balance. During growth, t counts active days and T sets the slowdown time. During fading, H₀ is the starting balance, t counts days since fading began, and T is the time to zero. The fraction elapsed is x = t/T. Each mode uses D for its own reference duration.
+
 Existing fades keep their saved shape and duration. Newly ended sources and renewed Reputation use current controls. Press **Apply & save** to refresh the map; History plots actual wealth, Game threat wealth, Adjusted threat wealth, and deterrence.
 
 **Summary** shows the selected scope's formula and standard examples. Examples include a 100-power body or death, original human gear worth 1,500, stock worth 1,000, one act, or one day of a hazard at the stated exposure. The default view uses five colonists. Colony size scaling reveals columns for 1, 5, 10, and 20. Click a row to edit it.
@@ -119,4 +121,4 @@ For an ordinary enemy raid, RimWorld draws from eligible factions. The draw is w
 
 In **Presets**, type a name and select **Save new**. Pick a saved preset to load, rename, overwrite, or delete it. Presets include Global settings and faction overrides. Deterrence balances and wealth history stay with the save.
 
-This guide describes **Deterrence 0.12.0**, formerly Antiwealth.
+This guide describes **Deterrence 0.12.1**, formerly Antiwealth.

@@ -50,7 +50,9 @@ namespace Deterrence
         private static float EquationHeight(EquationImage texture, float availableWidth)
             => Mathf.Min(2f * Text.LineHeight, Mathf.Max(0, availableWidth) * texture.Height / texture.Width);
 
-        private static void DrawEquationLine(Rect area, EquationImage texture, float height, string suffix, float suffixWidth, bool centered)
+        private const float NoteGap = 18f;
+
+        private static void DrawEquationLine(Rect area, EquationImage texture, float height, string suffix, float suffixWidth, bool centered, bool annotation = false)
         {
             float width = height * texture.Width / texture.Height;
             float left = centered ? area.center.x - (width + suffixWidth) / 2 : area.x;
@@ -68,8 +70,12 @@ namespace Deterrence
             if (suffix != null)
             {
                 float baseline = origin.y + height * (22f / 32f);
-                Widgets.Label(new Rect(origin.x + width + 4, baseline - Text.LineHeight * 0.75f,
-                    suffixWidth - 4, Text.LineHeight), suffix);
+                float gap = annotation ? NoteGap : 4f;
+                if (annotation)
+                    Widgets.DrawBoxSolid(new Rect(origin.x + width + gap / 2, area.center.y - 7, 1, 14),
+                        new Color(1f, 1f, 1f, 0.32f));
+                Widgets.Label(new Rect(origin.x + width + gap, baseline - Text.LineHeight * 0.75f,
+                    suffixWidth - gap, Text.LineHeight), suffix);
             }
         }
 
@@ -78,15 +84,17 @@ namespace Deterrence
             var texture = EquationTexture(name);
             if (texture == null)
             {
-                Label(listing, suffix == null ? fallback : fallback + "  " + suffix, help, true, centered);
+                Label(listing, fallback, help, true, centered);
+                if (suffix != null) listing.Label(suffix, tooltip: help);
                 return;
             }
-            float suffixWidth = suffix == null ? 0 : Mathf.Ceil(Text.CalcSize(suffix).x) + 6;
+            float suffixWidth = suffix == null ? 0 : Mathf.Ceil(Text.CalcSize(suffix).x) + NoteGap + 2;
             float available = listing.ColumnWidth;
-            bool wrapSuffix = suffix != null && available - suffixWidth < texture.Width * Text.LineHeight / texture.Height;
-            float height = EquationHeight(texture, available - (wrapSuffix ? 0 : suffixWidth));
+            float height = EquationHeight(texture, available);
+            float width = height * texture.Width / texture.Height;
+            bool wrapSuffix = suffix != null && width + suffixWidth > available;
             Rect row = listing.GetRect(Mathf.Max(28, height));
-            DrawEquationLine(row, texture, height, wrapSuffix ? null : suffix, wrapSuffix ? 0 : suffixWidth, centered);
+            DrawEquationLine(row, texture, height, wrapSuffix ? null : suffix, wrapSuffix ? 0 : suffixWidth, centered, annotation: true);
             TooltipHandler.TipRegion(row, help);
             if (wrapSuffix) listing.Label(suffix, tooltip: help);
         }

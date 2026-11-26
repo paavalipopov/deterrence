@@ -47,81 +47,73 @@ namespace Deterrence
         private void DrawHazardGrowth(Listing_Standard listing, DeterrenceSettings settings)
         {
             SectionTitle(listing, "Hazard growth");
-            listing.Label("R is the starting gain in points per day. T sets how soon that gain slows.");
-            if (settings.GrowthByRate)
-                HelpUI.Equation(listing, "RateTimescale", "T = D × √(R / 2,000)",
-                    "D is the slowdown time at 2,000 points/day. Four times the rate gives twice the slowdown time.",
-                    "D = days at 2,000/day");
+            if (settings.GrowthShape == 0)
+                HelpUI.Equation(listing, "GrowthLinearRate", "Daily gain  dH/dt = R",
+                    "With p at zero, the gain stays at its starting rate throughout exposure.");
             else
-                HelpUI.Equation(listing, "ExposureTimescale", "T = K / R",
-                    "K is the raw exposure scale in points. At twice the starting rate, it takes half as long to reach K.",
-                    "K = raw exposure scale");
+                HelpUI.Equation(listing, "SharedGrowthRate", "Daily gain  dH/dt = R (1 + t / (pT))⁻ᵖ",
+                    "For a steady hazard starting from zero. A change in rate carries the accumulated slowdown forward.");
+            listing.Label("H is the deterrence balance. R is its starting gain per day. Here t is active days and T is the slowdown time.");
+            listing.Label("p sets the growth shape: 0 is linear, ½ is square root, 1 is logarithmic.");
+            GlobalSlider(listing, "Growth shape", ref settings.GrowthShape, 0, 1, 0.01f, symbol: "p");
 
+            listing.Gap(6);
+            listing.Label("Slowdown time (T)");
             Rect timing = listing.GetRect(32);
             if (ChoiceButton(timing, 0, 2, "By total exposure", !settings.GrowthByRate)) settings.GrowthByRate = false;
             if (ChoiceButton(timing, 1, 2, "By daily rate", settings.GrowthByRate)) settings.GrowthByRate = true;
             if (settings.GrowthByRate)
             {
-                listing.Label("At higher starting rates, slowdown comes later.");
+                HelpUI.Equation(listing, "RateTimescale", "T = D × √(R / 2,000)",
+                    "D is the slowdown time at 2,000 points/day. Four times the rate gives twice the slowdown time.",
+                    "D = days at 2,000/day");
                 GlobalSlider(listing, "Slowdown days at 2,000/day", ref settings.SlowdownDays, 0.1f, 120, 0.1f, symbol: "D");
             }
             else
             {
-                listing.Label("Stronger hazards reach the same exposure sooner.");
+                HelpUI.Equation(listing, "ExposureTimescale", "T = K / R",
+                    "At twice the starting rate, it takes half as long to reach the exposure scale K.",
+                    "K = raw exposure scale");
                 GlobalSlider(listing, "Exposure scale", ref settings.SlowdownScale, 100, 1000000, 100, symbol: "K");
             }
-
-            listing.Gap(6);
-            listing.Label("H is hazard deterrence. At a steady rate, t counts active days.");
-            if (settings.GrowthShape == 0)
-                HelpUI.Equation(listing, "GrowthLinearRate", "Daily gain  dH/dt = R",
-                    "With p at zero, the balance grows by R points every active day.");
-            else
-                HelpUI.Equation(listing, "SharedGrowthRate", "Daily gain  dH/dt = R (1 + t / (pT))⁻ᵖ",
-                    "For a steady hazard starting from zero. If its rate changes, the game carries its slowdown forward.");
-            listing.Label("p shapes the buildup. At 0 it is linear, at ½ square root, and at 1 logarithmic.");
-            GlobalSlider(listing, "Growth shape", ref settings.GrowthShape, 0, 1, 0.01f, symbol: "p");
             listing.Label("After 10 days at 2,000/day: " + F(settings.Growth.FromZero(2000, 10)) + " deterrence.");
         }
 
         private void DrawFading(Listing_Standard listing, DeterrenceSettings settings)
         {
             SectionTitle(listing, "Fading");
-            listing.Label("F is the time until the balance reaches zero. At the reference value it lasts L = "
-                + F(settings.RecoveryDays) + " days.");
-            if (settings.FadeByHistory)
-            {
-                HelpUI.Equation(listing, "HistoryArea", "A = ∫ H(t) dt",
-                    "Add up the hazard balance over its latest active episode, in point-days.",
-                    "A = buildup in point-days");
-                HelpUI.Equation(listing, "HistoryDuration", "F = L (A / reference area)ᑫ",
-                    "Compare the episode's area A with the reference area. At the reference area the fade lasts L days.");
-            }
-            else
-                HelpUI.Equation(listing, "FadeDuration", "F = L (B₀ / reference balance)ᑫ",
-                    "Compare the balance at the start of fading with the reference balance.",
-                    "B₀ = starting balance");
+            HelpUI.Equation(listing, "FadeCubic", "Remaining = H₀ (1 − 3x² + 2x³)",
+                "H₀ is the balance when fading begins. Both duration choices use this curve.",
+                "H₀ = starting balance");
+            HelpUI.Equation(listing, "FadeProgress", "x = t / T",
+                "The fraction of the fade elapsed runs from zero at the start to one at the end.",
+                "x = fraction of fade elapsed");
+            listing.Label("Here t counts days since fading began, and T is the total fade duration. Half the balance remains at x = ½.");
 
+            listing.Gap(6);
+            listing.Label("Fade duration (T)");
             Rect basis = listing.GetRect(32);
             if (ChoiceButton(basis, 0, 2, "Starting balance", !settings.FadeByHistory)) settings.FadeByHistory = false;
             if (ChoiceButton(basis, 1, 2, "Hazard history", settings.FadeByHistory)) settings.FadeByHistory = true;
+            string referenceDays = "D = " + F(settings.RecoveryDays) + " days at reference";
             if (settings.FadeByHistory)
             {
-                listing.Label("A longer-lived hazard can linger longer. Reputation and removed bodies use starting balance.");
+                HelpUI.Equation(listing, "HistoryDuration", "T = D (A / reference area)ᑫ",
+                    "Compare the area under the active balance with the reference area.", referenceDays);
+                HelpUI.Equation(listing, "HistoryArea", "A = ∫ H(t) dt",
+                    "Add up the balance over the latest active episode to get point-days.",
+                    "A = area during buildup");
                 GlobalSlider(listing, "Reference area (point-days)", ref settings.FadeReferenceArea, 100, 1000000, 100);
+                listing.Label("Reputation and removed bodies use their starting balance.");
             }
-            else GlobalSlider(listing, "Reference balance", ref settings.RecoveryReference, 100, 1000000, 100);
+            else
+            {
+                HelpUI.Equation(listing, "FadeDuration", "T = D (H₀ / reference balance)ᑫ",
+                    "Compare the starting balance with the reference balance.", referenceDays);
+                GlobalSlider(listing, "Reference balance", ref settings.RecoveryReference, 100, 1000000, 100);
+            }
             listing.Label("q sets how duration scales. At 0 it is fixed. At ½, four times the input lasts twice as long.");
             GlobalSlider(listing, "Duration exponent", ref settings.RecoveryExponent, 0, 1, 0.01f, symbol: "q");
-
-            listing.Gap(6);
-            HelpUI.Equation(listing, "FadeProgress", "u = elapsed days / F",
-                "Count days from the moment fading starts. At u = 1 the balance is gone.",
-                "u = fraction of fade elapsed");
-            HelpUI.Equation(listing, "FadeCubic", "Remaining = B₀ (1 − 3u² + 2u³)",
-                "B₀ is the balance when fading starts. The same curve applies to both duration choices.",
-                settings.FadeByHistory ? "B₀ = starting balance" : null);
-            listing.Label("Half the starting balance remains halfway through the fade.");
         }
 
         private static bool ChoiceButton(Rect row,int index,int count,string label,bool selectedValue)
