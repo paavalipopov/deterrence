@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.13.0
+
+- Curves shows total hazard buildup directly under daily gain and gives the two fade definitions larger type.
+- Hazards, Reputation and Combined previews have separate controls. The hive example now has arrival and clearance days and models clustered reproduction.
+- Faction selectors show world names followed by their faction type. Raid overrides still apply by type, and burial choices still apply to individual factions.
+- Updated the Workshop woodcut with wind, drizzle, carrion and two crows.
+
 ## 0.12.1
 
 - Put daily gain and remaining balance first on the Curves tab. Growth and fading now share balance and time notation. Formula notes have a divider or wrap onto a separate line.

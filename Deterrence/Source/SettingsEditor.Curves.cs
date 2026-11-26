@@ -53,7 +53,12 @@ namespace Deterrence
             else
                 HelpUI.Equation(listing, "SharedGrowthRate", "Daily gain  dH/dt = R (1 + t / (pT))⁻ᵖ",
                     "For a steady hazard starting from zero. A change in rate carries the accumulated slowdown forward.");
-            listing.Label("H is the deterrence balance. R is its starting gain per day. Here t is active days and T is the slowdown time.");
+            string mode = settings.GrowthShape == 0 ? "Linear" : settings.GrowthShape == 1 ? "Log" : "Power";
+            string buildup = mode == "Linear" ? "Rt" : mode == "Log" ? "RT ln(1 + t/T)"
+                : "RpT/(1 − p) [(1 + t/(pT))^(1 − p) − 1]";
+            HelpUI.Equation(listing, "HazardBuildup" + mode, "Hazard buildup  H(t) = " + buildup,
+                "Accumulated points from a steady hazard starting at zero. The slope of this curve is the daily gain above.");
+            listing.Label("H is hazard buildup in points. R is the initial gain per day, t is days of exposure, and T is the slowdown time.");
             listing.Label("p sets the growth shape: 0 is linear, ½ is square root, 1 is logarithmic.");
             GlobalSlider(listing, "Growth shape", ref settings.GrowthShape, 0, 1, 0.01f, symbol: "p");
 
@@ -84,10 +89,10 @@ namespace Deterrence
             SectionTitle(listing, "Fading");
             HelpUI.Equation(listing, "FadeCubic", "Remaining = H₀ (1 − 3x² + 2x³)",
                 "H₀ is the balance when fading begins. Both duration choices use this curve.",
-                "H₀ = starting balance");
+                "H₀ = starting balance", largeNote: true);
             HelpUI.Equation(listing, "FadeProgress", "x = t / T",
                 "The fraction of the fade elapsed runs from zero at the start to one at the end.",
-                "x = fraction of fade elapsed");
+                "x = fraction of fade elapsed", largeNote: true);
             listing.Label("Here t counts days since fading began, and T is the total fade duration. Half the balance remains at x = ½.");
 
             listing.Gap(6);
@@ -131,16 +136,17 @@ namespace Deterrence
             HelpUI.Label(listing,"Example preview",
                 "This graph starts from zero and uses the configured fallout and hive rates. Preview inputs affect the graph only.", true);
             Rect modes=listing.GetRect(30);
-            string[] labels={"Hazard overlap","Repeated acts","Combined"};
+            string[] labels={"Hazards","Reputation","Combined"};
             for(int i=0;i<labels.Length;i++) if(ChoiceButton(modes,i,3,labels[i],labMode==i)) labMode=i;
             int colonists = ExampleColonists;
             string signature=string.Join("|",settings.GrowthByRate,settings.GrowthShape,settings.SlowdownDays,settings.SlowdownScale,settings.RecoveryDays,settings.RecoveryReference,
-                settings.RecoveryExponent,settings.FadeByHistory,settings.FadeReferenceArea,labMode,colonists,labDays,labBump,labInterval,labCount,
+                settings.RecoveryExponent,settings.FadeByHistory,settings.FadeReferenceArea,labMode,colonists,labDays,labHiveStart,labHiveEnd,labBump,labInterval,labCount,
                 settings.Rule("condition:ToxicFallout").AmountFor(colonists),settings.Rule("infestation:hives").AmountFor(colonists));
             if(labCurves==null || signature!=labSignature)
             {
                 labSignature=signature;
-                labCurves=DeterrenceGraphs.LaboratoryView(settings,labMode,colonists,labDays,labBump,labInterval,labCount,out labEnd);
+                labCurves=DeterrenceGraphs.ScenarioView(settings,labMode,colonists,labDays,labHiveStart,labHiveEnd,
+                    labBump,labInterval,labCount,out labEnd);
             }
             DeterrenceGraphs.Draw(listing.GetRect(Mathf.Clamp(rect.height - listing.CurHeight - 8, 90, 415)),
                 labCurves,0,labEnd,"Example days");
@@ -157,6 +163,9 @@ namespace Deterrence
                     if (showColonyControls)
                         previewPopulation=(int)PreviewSlider(listing,"Example colonists",previewPopulation,1,50,1);
                     labDays=PreviewSlider(listing,"Fallout duration (days)",labDays,1,30,1);
+                    labHiveStart=PreviewSlider(listing,"First hive appears on day",labHiveStart,0,60,1);
+                    labHiveEnd=PreviewSlider(listing,"All hives cleared on day",Math.Max(labHiveStart,labHiveEnd),labHiveStart,90,1);
+                    listing.Label("One hive starts the cluster. At standard speed, each generation doubles after about 2½ days, longer as the cluster crowds, up to 30 hives.");
                 }
                 if(labMode!=0)
                 {

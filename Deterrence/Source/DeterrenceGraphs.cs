@@ -94,44 +94,85 @@ namespace Deterrence
             };
         }
 
+        // Illustrative generations at standard speed with room to spread. Nearby hives
+        // all share one room. Real reproduction rolls a separate interval for each hive.
+        private sealed class HiveExample
+        {
+            public readonly List<double> BirthDays = new List<double>();
+            public readonly double FadeDays;
+            private readonly double start, stop, unitRate, peak;
+            private readonly HazardGrowth growth;
+
+            public HiveExample(DeterrenceSettings settings, double unitRate, double start, double stop)
+            {
+                this.start = start;
+                this.stop = Math.Max(start, stop);
+                this.unitRate = unitRate;
+                growth = settings.Growth;
+                double day = start;
+                for (int n = 1; n < 30; n *= 2)
+                {
+                    // CompProperties_SpawnerHives defaults: 2–3 days; density factor
+                    // falls from 1 at zero nearby hives to 0.35 at seven (including self).
+                    double factor = 1 - 0.65 * Math.Min(n, 7) / 7;
+                    day += 2.5 / factor;
+                    if (day >= this.stop) break;
+                    BirthDays.Add(day);
+                }
+                var final = BuildTo(this.stop);
+                peak = final.Balance;
+                FadeDays = peak > 0 ? settings.FadeDuration(peak, final.ActiveArea, true) : 0;
+            }
+
+            private CreditState BuildTo(double day)
+            {
+                var state = new CreditState();
+                double last = start;
+                int count = 1;
+                foreach (double birth in BirthDays)
+                {
+                    if (birth >= day) break;
+                    state.Accrue(unitRate * count, birth - last, growth);
+                    count = Math.Min(30, count * 2);
+                    last = birth;
+                }
+                state.Accrue(unitRate * count, day - last, growth);
+                return state;
+            }
+
+            public double At(double day) => day <= start ? 0 : day < stop ? BuildTo(day).Balance
+                : CreditMath.Remaining(peak, day - stop, FadeDays);
+        }
+
         public static List<SimpleCurveDrawInfo> LaboratoryView(DeterrenceSettings settings,int mode,int population,
             float activeDays,float gain,float interval,int count,out float end)
-        {
-            var all=Laboratory(settings,population,activeDays,mode==0?0:gain,interval,count);
-            end=all.Max(c=>c.curve.Points.Last().x);
-            if(mode==0)
-            {
-                all[3].label="Total hazards";
-                return new List<SimpleCurveDrawInfo>{all[0],all[1],all[3]};
-            }
-            if(mode==1)
-            {
-                double last=(count-1)*interval;
-                double peak=PreviewMath.Bumps(last,gain,interval,count,settings.RecoveryDays,settings.RecoveryReference,settings.RecoveryExponent,FadeCurve.Cubic);
-                end=(float)(last+CreditMath.Duration(peak,settings.RecoveryDays,settings.RecoveryReference,settings.RecoveryExponent)+1);
-                double duration=CreditMath.Duration(gain,settings.RecoveryDays,settings.RecoveryReference,settings.RecoveryExponent);
-                return new List<SimpleCurveDrawInfo>{Series("One act only",VanillaColor,
-                    all[2].curve.Points.Select(p=>new CurvePoint(p.x,(float)CreditMath.Remaining(gain,p.x,duration,FadeCurve.Cubic)))),all[2]};
-            }
-            return all;
-        }
+            => ScenarioView(settings, mode, population, activeDays, 3, activeDays + 5, gain, interval, count, out end);
 
         public static List<SimpleCurveDrawInfo> Laboratory(DeterrenceSettings settings, int population,
             float activeDays, float bump, float interval, int count)
+            => LaboratoryView(settings, 2, population, activeDays, bump, interval, count, out _);
+
+        public static List<SimpleCurveDrawInfo> ScenarioView(DeterrenceSettings settings, int mode, int population,
+            float activeDays, float hiveStart, float hiveEnd, float bump, float interval, int count, out float end)
         {
             double aRate = settings.Rule("condition:ToxicFallout", 4000).AmountFor(population);
             double bRate = settings.Rule("infestation:hives", 2000).AmountFor(population);
             var fallout = new HazardExample(settings, aRate, activeDays);
-            var hive = new HazardExample(settings, bRate, activeDays + 2);
+            var hive = new HiveExample(settings, bRate, hiveStart, hiveEnd);
             double lastBump = (count - 1) * interval;
             double bumpPeak = PreviewMath.Bumps(lastBump, bump, interval, count, settings.RecoveryDays,
                 settings.RecoveryReference, settings.RecoveryExponent, FadeCurve.Cubic);
-            double end = Math.Max(activeDays + fallout.FadeDays,
-                Math.Max(activeDays + 5 + hive.FadeDays,
-                    lastBump + CreditMath.Duration(bumpPeak, settings.RecoveryDays, settings.RecoveryReference, settings.RecoveryExponent))) + 1;
-            var times = new SortedSet<double>(Enumerable.Range(0, 301).Select(i => end * i / 300));
-            times.Add(activeDays); times.Add(3); times.Add(activeDays + 5);
-            for (int i = 0; i < count; i++)
+            double hazardEnd = Math.Max(activeDays + fallout.FadeDays, hiveEnd + hive.FadeDays);
+            double reputationEnd = lastBump + settings.FadeDuration(bumpPeak, 0, false);
+            double horizon = (mode == 0 ? hazardEnd : mode == 1 ? reputationEnd : Math.Max(hazardEnd, reputationEnd)) + 1;
+            end = (float)horizon;
+            var times = new SortedSet<double>(Enumerable.Range(0, 301).Select(i => horizon * i / 300));
+            if (mode != 1)
+            {
+                times.UnionWith(hive.BirthDays);
+                times.UnionWith(new double[] { activeDays, activeDays + fallout.FadeDays, hiveStart, hiveEnd, hiveEnd + hive.FadeDays });
+            }
+            for (int i = 0; mode != 0 && i < count; i++)
             {
                 double t = i * interval;
                 if (t > 0) times.Add(t - 0.0001);
@@ -141,15 +182,28 @@ namespace Deterrence
             var violence = new List<CurvePoint>(); var total = new List<CurvePoint>();
             foreach (double t in times)
             {
-                double a = fallout.At(t);
-                double b = hive.At(t - 3);
-                double v = PreviewMath.Bumps(t, bump, interval, count, settings.RecoveryDays,
+                double a = mode == 1 ? 0 : fallout.At(t);
+                double b = mode == 1 ? 0 : hive.At(t);
+                double v = mode == 0 ? 0 : PreviewMath.Bumps(t, bump, interval, count, settings.RecoveryDays,
                     settings.RecoveryReference, settings.RecoveryExponent, FadeCurve.Cubic);
                 first.Add(new CurvePoint((float)t, (float)a)); second.Add(new CurvePoint((float)t, (float)b));
                 violence.Add(new CurvePoint((float)t, (float)v)); total.Add(new CurvePoint((float)t, (float)(a+b+v)));
             }
-            return new List<SimpleCurveDrawInfo> { Series("Fallout", CreditColor, first), Series("One hive", VanillaColor, second),
-                Series("Reputation", new Color(1f,0.45f,0.5f), violence), Series("Total", EconomyColor, total) };
+            var curves = new List<SimpleCurveDrawInfo>();
+            if (mode != 1)
+            {
+                curves.Add(Series("Fallout", CreditColor, first));
+                curves.Add(Series("Hives", VanillaColor, second));
+            }
+            if (mode == 1)
+            {
+                double fade = settings.FadeDuration(bump, 0, false);
+                curves.Add(Series("One act only", VanillaColor, times.Select(t =>
+                    new CurvePoint((float)t, (float)CreditMath.Remaining(bump, t, fade)))));
+            }
+            if (mode != 0) curves.Add(Series("Reputation", new Color(1f,0.45f,0.5f), violence));
+            if (mode != 1) curves.Add(Series(mode == 0 ? "Total hazards" : "Total", EconomyColor, total));
+            return curves;
         }
     }
 }

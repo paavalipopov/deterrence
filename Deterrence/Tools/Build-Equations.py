@@ -133,6 +133,28 @@ def curve_controls():
     equation.text("−p", POWER_VARIABLE, baseline=12)
     equation.save("SharedGrowthRate")
 
+    for mode in ("Linear", "Power", "Log"):
+        equation = Equation()
+        equation.text("Hazard buildup  ")
+        equation.text("H(t) = ", VARIABLE)
+        if mode == "Linear":
+            equation.text("Rt", VARIABLE)
+        elif mode == "Log":
+            equation.text("RT ", VARIABLE)
+            equation.text("ln(")
+            equation.text("1 + ")
+            equation.fraction("t", "T")
+            equation.text(")")
+        else:
+            equation.fraction("RpT", "1 − p")
+            equation.text(" [(")
+            equation.text("1 + ")
+            equation.fraction("t", "pT")
+            equation.text(")")
+            equation.text("1−p", POWER_VARIABLE, baseline=13)
+            equation.text(" − 1]")
+        equation.save("HazardBuildup" + mode)
+
     equation = Equation()
     equation.text("T = ", VARIABLE)
     equation.fraction("K", "R")

@@ -34,7 +34,7 @@ namespace Deterrence
         private int previewPopulation = DefaultExampleColonists;
         private bool showColonyControls;
         private int ExampleColonists => showColonyControls ? previewPopulation : DefaultExampleColonists;
-        private float labDays = 6, labBump = 2000, labInterval = 3;
+        private float labDays = 6, labHiveStart = 3, labHiveEnd = 11, labBump = 2000, labInterval = 3;
         private int labCount = 3;
         private string labSignature;
         private List<SimpleCurveDrawInfo> labCurves;

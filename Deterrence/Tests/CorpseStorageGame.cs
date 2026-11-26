@@ -147,6 +147,18 @@ namespace DeterrenceTests
                 StorageSettingsClipboard.PasteInto(graveBuilding.GetStoreSettings());
                 var zoneRules = Rule(settings);
                 var menu = Rules.Assembly.GetType("Deterrence.CorpseFilterMenu");
+                var choices = (List<KeyValuePair<int,string>>)AccessTools.Method(menu,"Options")
+                    .Invoke(null,new object[]{2,zoneRules});
+                string type = enemy.def.LabelCap.ToString();
+                string expectedName = string.Equals(enemy.Name, type, StringComparison.CurrentCultureIgnoreCase)
+                    ? type : enemy.Name + " (" + type + ")";
+                Check(choices.Single(p => p.Key == enemy.loadID).Value == expectedName
+                    && (string)Get(Record(pawn),"FactionName") == expectedName,
+                    "burial picker and saved identity show the world faction name and type");
+                string raidLabel = (string)AccessTools.Method(typeof(Deterrence.SettingsEditor),"FactionTypeLabel")
+                    .Invoke(null,new object[]{enemy.def});
+                Check(raidLabel.Contains(enemy.Name) && raidLabel.Contains(type),
+                    "raid settings show the world faction name and shared type");
                 Check(AccessTools.Method(menu,"Owner").Invoke(null,new object[]{settings.filter}) == settings,
                     "storage tree resolves the exact edited storage settings");
                 Check(AccessTools.Method(menu,"Owner").Invoke(null,new object[]{new ThingFilter()}) == null,

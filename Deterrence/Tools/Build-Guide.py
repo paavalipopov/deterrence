@@ -246,11 +246,11 @@ Illness, solar flares, eclipses, psychic drones, volcanic winter, poor soil, and
 
 Settings follow **Formula, Remains, Reputation, Hazards, Curves, Summary, Misc, Presets**. The bottom of Formula has **Colony size scaling**, **Faction overrides**, and **Open meters**. Colony size scaling reveals sample colonist inputs and additional Summary columns. This display preference applies to Global and every faction. Saved gameplay scaling applies while its controls are hidden.
 
-**Curves** puts the live plot beside scrollable growth and fade controls on wide windows. On narrow windows the plot sits above them. The preview offers Hazard overlap, Repeated acts, and Combined views. **By total exposure** slows hazards as raw exposure accumulates. **By daily rate** gives stronger hazards a longer slowdown time, calibrated at 2,000 points/day. Both use one shape slider: 0 for linear growth, 0.5 for square root, and 1 for logarithmic growth.
+**Curves** puts the live plot beside scrollable growth and fade controls on wide windows. On narrow windows the plot sits above them. The preview offers Hazards, Reputation, and Combined views. You can set when a hive appears and when the cluster is cleared. The preview uses midpoint reproduction times at standard speed, with slower growth as hives crowd together. **By total exposure** slows hazards as raw exposure accumulates. **By daily rate** gives stronger hazards a longer slowdown time, calibrated at 2,000 points/day. Both use one shape slider: 0 for linear growth, 0.5 for square root, and 1 for logarithmic growth.
 
 Default fading is a smooth cubic curve. **10,000 deterrence lasts 10 days**, scaled by the square root of the ending amount: four times as much lasts twice as long. The duration exponent adjusts this scaling. Switch to **Hazard history** to use an ongoing hazard’s area in point-days. The reference area defaults to 20,000 point-days. Reputation and removed bodies use starting balance. A fade in progress keeps its saved shape and duration.
 
-H is the deterrence balance. During growth, t counts active days and T sets the slowdown time. During fading, H₀ is the starting balance, t counts days since fading began, and T is the time to zero. The fraction elapsed is x = t/T. Each mode uses D for its own reference duration.
+H is hazard buildup in points. The equation beneath daily gain gives the total for a steady hazard starting at zero. During growth, t counts active days and T sets the slowdown time. During fading, H₀ is the starting balance, t counts days since fading began, and T is the time to zero. The fraction elapsed is x = t/T. Each mode uses D for its own reference duration.
 
 Existing fades keep their saved shape and duration. Newly ended sources and renewed Reputation use current controls. Press **Apply & save** to refresh the map; History plots actual wealth, Game threat wealth, Adjusted threat wealth, and deterrence.
 
@@ -274,7 +274,7 @@ For an ordinary enemy raid, RimWorld draws from eligible factions. The draw is w
 
 In **Presets**, type a name and select **Save new**. Pick a saved preset to load, rename, overwrite, or delete it. Presets include Global settings and faction overrides. Deterrence balances and wealth history stay with the save.
 
-This guide describes **Deterrence 0.12.1**, formerly Antiwealth.
+This guide describes **Deterrence 0.13.0**, formerly Antiwealth.
 '''
 
 (ROOT/'Deterrence-Guide.md').write_text(guide, encoding='utf-8')

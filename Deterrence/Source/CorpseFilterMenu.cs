@@ -44,7 +44,7 @@ namespace Deterrence
                 foreach (var pair in rules.Factions) names[pair.Key] = pair.Value;
             foreach (var faction in Find.FactionManager.AllFactionsListForReading)
                 if (!faction.Hidden || faction.IsPlayer || names.ContainsKey(faction.loadID))
-                    names[faction.loadID] = faction.Name ?? faction.def.LabelCap.ToString();
+                    names[faction.loadID] = SettingsEditor.FormatFactionLabel(faction.Name, faction.def.LabelCap.ToString());
             names.Remove(BurialRecord.Factionless);
             var options = names.GroupBy(p => p.Value ?? "Unknown faction", StringComparer.CurrentCultureIgnoreCase)
                 .OrderBy(group => group.Key, StringComparer.CurrentCultureIgnoreCase)

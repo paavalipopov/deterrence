@@ -17,7 +17,7 @@ namespace Deterrence
             LegacyIdentity.ImportSettings(content.FolderName);
             Settings = GetSettings<DeterrenceSettings>();
             Settings.Sanitize();
-            Log.Message("[Deterrence] Loaded 0.12.1.");
+            Log.Message("[Deterrence] Loaded 0.13.0.");
         }
 
         public override string SettingsCategory() => "Deterrence";

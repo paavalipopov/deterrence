@@ -20,7 +20,8 @@ namespace Deterrence
         private BurialRecord(Pawn pawn, BurialStatus status)
         {
             FactionId = pawn.Faction?.loadID ?? Factionless;
-            FactionName = pawn.Faction?.Name;
+            if (pawn.Faction != null)
+                FactionName = SettingsEditor.FormatFactionLabel(pawn.Faction.Name, pawn.Faction.def.LabelCap.ToString());
             Status = status;
         }
         public void ExposeData()

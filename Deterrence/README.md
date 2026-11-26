@@ -1,4 +1,4 @@
-# Deterrence 0.12.1
+# Deterrence 0.13.0
 
 Danger and its lingering reputation reduce the wealth used to size outside threats. Actual asset prices stay unchanged.
 
@@ -34,7 +34,7 @@ Individual status is saved at death. A raider can be Hostile and a prisoner from
 
 ## Faction overrides
 
-Enable **Faction overrides** under **Formula > Options**, then select a faction type from **Settings for**. Each faction inherits Global values until you edit a control. This includes switches, individual source weights, growth and fade settings, the biome and island factors, and the surface multiplier. Summary follows the selected scope. **Reset to Global** clears all overrides for that faction. **Apply & save** refreshes the colony.
+Enable **Faction overrides** under **Formula > Options**, then select a faction type from **Settings for**. In a loaded colony the selector shows world names followed by the shared type in parentheses. Each faction inherits Global values until you edit a control. This includes switches, individual source weights, growth and fade settings, the biome and island factors, and the surface multiplier. Summary follows the selected scope. **Reset to Global** clears all overrides for that faction. **Apply & save** refreshes the colony.
 
 Overrides size ordinary enemy raids after faction selection. Global still supplies the starting budget used to select the faction, as well as the shared meters and history. Scripted raid budgets keep their assigned points. Faction balances begin with the current Global balances when a source or curve is first customized. From then on they use their own weights and timing as new events occur.
 
@@ -46,9 +46,9 @@ Open meters from the shield beside **World**, or use **Formula > Options > Open 
 
 **Fading** uses the same smooth cubic for every new fade. **Starting balance** sets duration from ending points. **Hazard history** uses the integral of an ongoing hazard's active balance in point-days. A new active episode starts a fresh area at its surviving balance. Instant Reputation gains and removed bodies use the balance calibration. At the reference value a fade takes 10 days by default. At exponent 0 every fade takes the reference duration; at 0.5, four times the balance or area gives twice the duration.
 
-H is the deterrence balance. During growth, t counts active days and T sets the slowdown time. During fading, H₀ is the starting balance, t counts days since fading began, and T is the time to zero. The fraction elapsed is x = t/T. Each mode uses D for its own reference duration.
+H is hazard buildup in points. The equation beneath daily gain gives the total for a steady hazard starting at zero. During growth, t counts active days and T sets the slowdown time. During fading, H₀ is the starting balance, t counts days since fading began, and T is the time to zero. The fraction elapsed is x = t/T. Each mode uses D for its own reference duration.
 
-Existing settings and presets keep their exposure scale, growth shape and reference duration. A fade in progress completes on its saved clock and shape. Hazards already active in older saves use starting balance for their first fade because their past area was never recorded. The buildup-rate clock starts tracking from the upgrade. **Preview inputs** change only the example graph.
+Existing settings and presets keep their exposure scale, growth shape and reference duration. A fade in progress completes on its saved clock and shape. Hazards already active in older saves use starting balance for their first fade because their past area was never recorded. The buildup-rate clock starts tracking from the upgrade. **Preview inputs** change only the example graph. Hazards and Combined let you choose the day the first hive appears and the day the cluster is cleared. A single hive starts the example. Successive generations double at the midpoint of the vanilla reproduction interval, slowed by crowding and capped at 30. Reputation has its own timeline.
 
 ## Presets
 

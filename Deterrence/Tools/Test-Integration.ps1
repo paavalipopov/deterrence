@@ -384,6 +384,31 @@ foreach ($mode in @(0,1,2)) {
 }
 'PASS hazard-only, repeated-act, and combined native plot series'
 
+$scenario = $graphType.GetMethod('ScenarioView')
+function Get-Scenario([int]$mode, [float]$start, [float]$stop) {
+    $inputs = @($settings,$mode,[int]5,[float]6,$start,$stop,[float]2000,[float]3,[int]3,[float]0)
+    return ,$scenario.Invoke($null,$inputs)
+}
+$oldShape = $settings.GrowthShape
+$settings.GrowthShape = 0
+$hiveRate = $settings.Rule('infestation:hives').AmountFor(5)
+$birth = 3 + 2.5 / (1 - 0.65 / 7)
+foreach ($mode in @(0,2)) {
+    $plot = Get-Scenario $mode 3 8
+    $hives = $plot[1].curve
+    $atClear = $hiveRate * (($birth - 3) + 2 * (8 - $birth))
+    if ($hives.Evaluate(3) -ne 0 -or [Math]::Abs($hives.Evaluate(8) - $atClear) -gt 0.05 -or
+        $hives.Evaluate(9) -ge $atClear -or $hives.Points[-1].y -ne 0) { throw 'Hive birth, clearing or fading incorrect' }
+    $empty = Get-Scenario $mode 10 10
+    if (($empty[1].curve.Points | Where-Object y -ne 0)) { throw 'Same-day clearance earned hive points' }
+}
+$early = Get-Scenario 1 0 2
+$late = Get-Scenario 1 40 60
+if (($early[1].curve.Points[-1].x -ne $late[1].curve.Points[-1].x) -or
+    ($early[1].curve.Points.Count -ne $late[1].curve.Points.Count)) { throw 'Hive dates affected reputation preview' }
+$settings.GrowthShape = $oldShape
+'PASS hive appearance, reproduction, removal and isolated reputation preview'
+
 $overrideType = $modAssembly.GetType('Deterrence.FactionOverride')
 $override = [Activator]::CreateInstance($overrideType)
 $override.FactionKey = 'TestRaiders'
