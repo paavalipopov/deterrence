@@ -1,4 +1,4 @@
-# Deterrence 0.13.0
+# Deterrence 0.13.1
 
 Danger and its lingering reputation reduce the wealth used to size outside threats. Actual asset prices stay unchanged.
 
@@ -46,7 +46,7 @@ Open meters from the shield beside **World**, or use **Formula > Options > Open 
 
 **Fading** uses the same smooth cubic for every new fade. **Starting balance** sets duration from ending points. **Hazard history** uses the integral of an ongoing hazard's active balance in point-days. A new active episode starts a fresh area at its surviving balance. Instant Reputation gains and removed bodies use the balance calibration. At the reference value a fade takes 10 days by default. At exponent 0 every fade takes the reference duration; at 0.5, four times the balance or area gives twice the duration.
 
-H is hazard buildup in points. The equation beneath daily gain gives the total for a steady hazard starting at zero. During growth, t counts active days and T sets the slowdown time. During fading, H₀ is the starting balance, t counts days since fading began, and T is the time to zero. The fraction elapsed is x = t/T. Each mode uses D for its own reference duration.
+H is hazard buildup in points. The line beneath daily gain shows the long-run trend for a steady hazard. At p = 0, H = Rt. Between 0 and 1, H grows like (t/T)^(1 − p). At p = 1, it grows like ln(t/T). The graph gives the exact point totals. During growth, t counts active days and T sets the slowdown time. During fading, H₀ is the starting balance, t counts days since fading began, and T is the time to zero. The fraction elapsed is x = t/T. Each mode uses D for its own reference duration.
 
 Existing settings and presets keep their exposure scale, growth shape and reference duration. A fade in progress completes on its saved clock and shape. Hazards already active in older saves use starting balance for their first fade because their past area was never recorded. The buildup-rate clock starts tracking from the upgrade. **Preview inputs** change only the example graph. Hazards and Combined let you choose the day the first hive appears and the day the cluster is cleared. A single hive starts the example. Successive generations double at the midpoint of the vanilla reproduction interval, slowed by crowding and capped at 30. Reputation has its own timeline.
 

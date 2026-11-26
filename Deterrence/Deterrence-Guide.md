@@ -97,7 +97,7 @@ Settings follow **Formula, Remains, Reputation, Hazards, Curves, Summary, Misc, 
 
 Default fading is a smooth cubic curve. **10,000 deterrence lasts 10 days**, scaled by the square root of the ending amount: four times as much lasts twice as long. The duration exponent adjusts this scaling. Switch to **Hazard history** to use an ongoing hazard’s area in point-days. The reference area defaults to 20,000 point-days. Reputation and removed bodies use starting balance. A fade in progress keeps its saved shape and duration.
 
-H is hazard buildup in points. The equation beneath daily gain gives the total for a steady hazard starting at zero. During growth, t counts active days and T sets the slowdown time. During fading, H₀ is the starting balance, t counts days since fading began, and T is the time to zero. The fraction elapsed is x = t/T. Each mode uses D for its own reference duration.
+H is hazard buildup in points. The line beneath daily gain shows the long-run trend for a steady hazard. At p = 0, H = Rt. Between 0 and 1, H grows like (t/T)^(1 − p). At p = 1, it grows like ln(t/T). The graph gives the exact point totals. During growth, t counts active days and T sets the slowdown time. During fading, H₀ is the starting balance, t counts days since fading began, and T is the time to zero. The fraction elapsed is x = t/T. Each mode uses D for its own reference duration.
 
 Existing fades keep their saved shape and duration. Newly ended sources and renewed Reputation use current controls. Press **Apply & save** to refresh the map; History plots actual wealth, Game threat wealth, Adjusted threat wealth, and deterrence.
 
@@ -121,4 +121,4 @@ For an ordinary enemy raid, RimWorld draws from eligible factions. The draw is w
 
 In **Presets**, type a name and select **Save new**. Pick a saved preset to load, rename, overwrite, or delete it. Presets include Global settings and faction overrides. Deterrence balances and wealth history stay with the save.
 
-This guide describes **Deterrence 0.13.0**, formerly Antiwealth.
+This guide describes **Deterrence 0.13.1**, formerly Antiwealth.

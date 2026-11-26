@@ -54,10 +54,10 @@ namespace Deterrence
                 HelpUI.Equation(listing, "SharedGrowthRate", "Daily gain  dH/dt = R (1 + t / (pT))⁻ᵖ",
                     "For a steady hazard starting from zero. A change in rate carries the accumulated slowdown forward.");
             string mode = settings.GrowthShape == 0 ? "Linear" : settings.GrowthShape == 1 ? "Log" : "Power";
-            string buildup = mode == "Linear" ? "Rt" : mode == "Log" ? "RT ln(1 + t/T)"
-                : "RpT/(1 − p) [(1 + t/(pT))^(1 − p) − 1]";
-            HelpUI.Equation(listing, "HazardBuildup" + mode, "Hazard buildup  H(t) = " + buildup,
-                "Accumulated points from a steady hazard starting at zero. The slope of this curve is the daily gain above.");
+            string buildup = mode == "Linear" ? "H = Rt" : mode == "Log" ? "H grows like ln(t/T)" : "H grows like (t/T)^(1 − p)";
+            HelpUI.Equation(listing, "HazardBuildup" + mode, "Long-run buildup  " + buildup,
+                mode == "Linear" ? "At a steady rate R, buildup grows linearly from day one."
+                    : "How buildup grows at a steady rate R when t is much larger than T. This trend omits constant factors. The graph shows the exact buildup at every day.");
             listing.Label("H is hazard buildup in points. R is the initial gain per day, t is days of exposure, and T is the slowdown time.");
             listing.Label("p sets the growth shape: 0 is linear, ½ is square root, 1 is logarithmic.");
             GlobalSlider(listing, "Growth shape", ref settings.GrowthShape, 0, 1, 0.01f, symbol: "p");

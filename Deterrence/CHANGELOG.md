@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.13.1
+
+- The buildup line on Curves now shows the long-run linear, power-law or logarithmic trend for the selected growth shape.
+- Restored the original still landscape on the cover, with a bare tree, the skull by the grave, and the deer and its crow on the farther hill.
+
 ## 0.13.0
 
 - Curves shows total hazard buildup directly under daily gain and gives the two fade definitions larger type.
