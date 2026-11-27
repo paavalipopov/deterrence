@@ -41,8 +41,20 @@ namespace Deterrence
                 TargetId = entry.Active ? entry.CorpseId : -1,
                 State = !entry.Active ? "Fading" : entry.Buried ? "Buried" : entry.CorpseId >= 0 || entry.SourceKey == "organs:local" ? "Present" : "Active",
                 Change = !entry.Active ? Left(entry, now) : entry.DailyGain > 0 ? "+" + Money(entry.DailyGain) + "/day" : "Kept",
-                Tip = entry.CorpseId >= 0 ? "Combat power: " + entry.CombatPower.ToString("0") + (entry.Buried ? ". Buried bodies keep full deterrence." : ".")
+                Tip = entry.CorpseId >= 0 ? "Combat power: " + entry.CombatPower.ToString("0") + "."
+                    + (entry.Active && entry.RawCredit > 0 ? " Worth " + Money(entry.RawCredit) + " before the remains curve; counts as " + Money(entry.Balance) + "." : "")
+                    + (entry.Buried ? " Buried bodies keep full deterrence." : "")
                     : !entry.Active ? "This contribution fades independently." : "Current contribution from this source." };
+
+        // Compare the kept bodies' value before the remains curve with what counts.
+        private static string CurveNote(IEnumerable<LedgerValues> entries)
+        {
+            var kept = entries.Where(e => e.Active && e.CorpseId >= 0 && e.RawCredit > 0).ToList();
+            if (kept.Count == 0) return "";
+            double raw = kept.Sum(e => e.RawCredit), counted = kept.Sum(e => CreditMath.Positive(e.Balance));
+            return " Kept bodies are worth " + Money(raw) + " before the remains curve and count as " + Money(counted)
+                + " (" + (counted / raw).ToString("P0") + ").";
+        }
 
         public static List<MeterNode> Build(IEnumerable<MeterGroup> groups, IEnumerable<OrganStockValues> organStock,
             double now, Func<LedgerValues, IEnumerable<ShareValues>> shares = null)
@@ -55,7 +67,7 @@ namespace Deterrence
                     State = State(group), Change = Change(group, now) };
                 if (group.Kind == MeterKind.HostileRemains)
                 {
-                    root.Tip = "Bodies and locally harvested prisoner organs. Expand for individual contributions.";
+                    root.Tip = "Bodies and locally harvested prisoner organs. Expand for individual contributions." + CurveNote(group.Contributors);
                     foreach (string kind in new[] { "human", "mech", "animal", "other", "organs" })
                     {
                         var entries = group.Contributors.Where(e => MeterGrouping.BodyKind(e) == kind).ToList();
@@ -66,7 +78,7 @@ namespace Deterrence
                         var child = new MeterNode { Key = root.Key + ":" + kind, Label = label, Credit = bucket.Balance,
                             State = State(bucket), Change = Change(bucket, now), Tip = kind == "organs"
                                 ? "Kept organ value times your multiplier. Stock deterrence ends when the organs leave."
-                                : "Includes buried bodies and any remains already fading." };
+                                : "Includes buried bodies and any remains already fading." + CurveNote(entries) };
                         if (kind == "organs" && stock.Count > 0)
                             foreach (var item in stock.OrderBy(s => s.Label).ThenBy(s => s.Key))
                                 child.Children.Add(new MeterNode { Key = item.Key, Label = item.Label, Credit = item.Credit, TargetId = item.TargetId, State = "Present", Change = "Kept",
