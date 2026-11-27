@@ -4,7 +4,8 @@ param(
 )
 $ErrorActionPreference = 'Stop'
 
-# Use the test-bed game beside the checkout when present, otherwise the Steam install.
+# Use RIMWORLD_GAME when set, then the test-bed game beside the checkout, then the Steam install.
+if (!$GameRoot) { $GameRoot = $env:RIMWORLD_GAME }
 if (!$GameRoot) {
     $testBed = Join-Path $PSScriptRoot '..\..\game'
     $GameRoot = if (Test-Path -LiteralPath (Join-Path $testBed 'RimWorldWin64.exe')) { (Resolve-Path -LiteralPath $testBed).Path }
