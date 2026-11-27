@@ -14,13 +14,13 @@ Open **Formula** to toggle deterrence, the biome factor and the island factor in
 | --- | --- |
 | Formula > Biome strength | The factor is w ^ strength. Here w is the biome's settlement selection weight, limited to 0 through 1. Strength ranges from 0 to 3. At 0 the factor is 1. The default 0.5 takes the square root. At 1 it equals the weight. At 3 a weight of 0.5 gives a factor of 0.125. |
 | Formula > Island factor | A 0–1 multiplier for water-enclosed landmasses within the tile limit. The limit defaults to 180 world tiles and accepts 1–350. By default, the colony must be the island's sole settlement. The multiplier defaults to 0.2. At 0 the wealth contribution is zero and the game's other threat factors still apply. |
-| Effects > Apply to quests | On by default. Quests and quest sites take their threat points, and the rewards that scale with them, from the combined threat wealth of your colonies. Turn it off to size quests from the game's own threat wealth. |
-| Effects > Turn away arrivals | Off by default. Trader caravans, visitor groups, travelers and wanderers joining are skipped with chance (1 − r)^p, where r = Threat / Base for the map. Drop pods and orbital traders are unaffected. |
-| Effects > Raid skip strength (s) | 0 by default. Human enemy raids are called off with chance s × (1 − r)^p, using r for the raiding faction's profile. Quest raids are unaffected. |
-| Effects > Skip exponent (p) | 2 by default. Shapes both skip chances. Above 1, mild deterrence barely changes how often outsiders come. |
-| Effects > Retreat point at reference reputation | 100% by default. Raiders usually retreat after losing 40–70% of their group. At the reference balance on Curves they retreat at this share of that point; with no reputation they keep it. |
-| Effects > Weight of a faction's own dead | 1 by default. A raiding faction counts the remains of its own members this many times before the remains curve. |
-| Effects > Smoothed surface wealth | Multiplier for smoothed floors/walls in **Game threat wealth**, before the formula. **The default of 0 excludes their contribution. Set 1 for vanilla weighting.** |
+| Options > Apply to quests | On by default. Quests and quest sites take their threat points, and the rewards that scale with them, from the combined threat wealth of your colonies. Turn it off to size quests from the game's own threat wealth. |
+| Options > Turn away arrivals | Off by default. Trader caravans, visitor groups, travelers and wanderers joining are skipped with chance (1 − r)^p, where r = Threat / Base for the map. Drop pods and orbital traders are unaffected. |
+| Options > Raid skip strength (s) | 0 by default. Human enemy raids are called off with chance s × (1 − r)^p, using r for the raiding faction's profile. Quest raids are unaffected. |
+| Options > Skip exponent (p) | 2 by default. Shapes both skip chances. Above 1, mild deterrence barely changes how often outsiders come. |
+| Options > Retreat point at reference reputation | 100% by default. Raiders usually retreat after losing 40–70% of their group. At the reference balance on Curves they retreat at this share of that point; with no reputation they keep it. |
+| Options > Weight of a faction's own dead | 1 by default. A raiding faction counts the remains of its own members this many times before the remains curve. |
+| Options > Smoothed surface wealth | Multiplier for smoothed floors/walls in **Game threat wealth**, before the formula. **The default of 0 excludes their contribution. Set 1 for vanilla weighting.** |
 
 The terrain factors apply directly. Mainland coasts and land that reaches a partial world's edge use island factor 1. The surface discount respects vanilla's half-value weighting of building wealth and refreshes hourly or when you press **Apply & save**.
 
@@ -44,7 +44,7 @@ Choose any combination inside a branch. All three branches and the vanilla filte
 | **Reputation** | A qualifying death, prisoner surgery or execution, or ritual adds a one-time gain to one shared balance. | Fading starts immediately. Every positive gain adds to what remains and restarts the shared fade. |
 | **Hazards** | Pollution, toxic conditions, hostile hives, and outdoor extremes accumulate with diminishing returns. | Each source type fades separately after its exposure ends. |
 
-Open meters from the shield badge beside **World**, or use **Formula > Options > Open meters**. The pie chart shows how much Remains, Reputation, and Hazards each contribute to the current map. Hover a slice or legend entry for its amount and percentage. Expand a meter to see its sources. Body rows identify burials, and arrows locate a body, grave, organ, or container.
+Open meters from the shield badge beside **World**, or use **Open meters** at the bottom of Formula. The pie chart shows how much Remains, Reputation, and Hazards each contribute to the current map. Hover a slice or legend entry for its amount and percentage. Expand a meter to see its sources. Body rows identify burials, and arrows locate a body, grave, organ, or container.
 
 ## Remains: bodies and organs
 
@@ -97,7 +97,7 @@ Illness, solar flares, eclipses, psychic drones, volcanic winter, poor soil, and
 
 ## Tune the curves
 
-Settings follow **Formula, Remains, Reputation, Hazards, Curves, Summary, Effects, Presets**. The bottom of Formula has **Colony size scaling**, **Faction overrides**, and **Open meters**. Colony size scaling reveals sample colonist inputs and additional Summary columns. This display preference applies to Global and every faction. Saved gameplay scaling applies while its controls are hidden.
+Settings follow **Formula, Remains, Reputation, Hazards, Curves, Summary, Options, Presets**. **Options** starts with **Colony size scaling**, **Faction overrides**, and **Apply to quests**. The bottom of Formula has **Open meters**. Colony size scaling reveals sample colonist inputs and additional Summary columns. This display preference applies to Global and every faction. Saved gameplay scaling applies while its controls are hidden.
 
 **Curves** puts the live plot beside scrollable growth and fade controls on wide windows. On narrow windows the plot sits above them. The preview offers Hazards, Reputation, and Combined views. You can set when a hive appears and when the cluster is cleared. The preview uses midpoint reproduction times at standard speed, with slower growth as hives crowd together. **By total exposure** slows hazards as raw exposure accumulates. **By daily rate** gives stronger hazards a longer slowdown time, calibrated at 2,000 points/day. Both use one shape slider: 0 for linear growth, 0.5 for square root, and 1 for logarithmic growth.
 
@@ -111,7 +111,7 @@ Existing fades keep their saved shape and duration. Newly ended sources and rene
 
 ## Optional faction overrides
 
-Check **Faction overrides** in **Formula > Options** to show **Settings for**. Select a faction type to edit its settings. Untouched values follow Global, including later changes. **Reset to Global** clears that faction's overrides. **Summary** follows the selected faction.
+Check **Faction overrides** in **Options** to show **Settings for**. Select a faction type to edit its settings. Untouched values follow Global, including later changes. **Reset to Global** clears that faction's overrides. **Summary** follows the selected faction.
 
 Faction settings affect the size of ordinary enemy raids on colony maps. The storyteller still chooses the faction using the shared Global budget. Incidents with explicit raid budgets keep their assigned points. The Global meters and history report the shared values.
 

@@ -37,7 +37,7 @@ Run these from `C:\RimTest\repo\Deterrence`. `Build.ps1` and `Tools\Inspect-Api.
 - Branch `next-version` holds all work after 0.13.1 and is pushed. GitHub's `main` is still 0.13.1.
 - Committed on `next-version`:
     - Per-class Harmony patching, status-at-death body discovery, wild-only maddened animals, Apply to quests, faster hourly scans.
-    - The Misc tab is renamed Effects: smoothed surfaces, quests, arrivals and raiders.
+    - The Misc tab is renamed Options and holds colony size scaling, faction overrides, smoothed surfaces, quests, arrivals and raiders.
     - Built-in Smart preset: waster pirates ignore pollution and toxic hazards, insects ignore remains and reputation, mechanoids ignore hazards.
     - Faction profiles also size infestations (Insect) and mech clusters and crashed ship parts (Mechanoid).
     - Remains pass the total of kept bodies through the hazard growth curve. A removed body fades its marginal contribution.

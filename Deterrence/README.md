@@ -16,9 +16,9 @@ Read the [illustrated guide](Deterrence-Guide.html), [editable guide](Deterrence
 
 The pie chart shows each meter’s share of the current map’s total deterrence. Hover a slice or its legend entry to see the amount. Expand meters into contributors. Physical rows have map arrows; buried bodies point to their grave. Reputation shows the latest 40 acts plus Earlier reputation; attribution never adds another contribution.
 
-Formula shows the enabled deterrence and terrain terms. **Biome strength** is the exponent in `k_biome = settlement weight ^ strength` and ranges from 0 to 3. `k_island` ranges from 0 to 1 and defaults to 0.2. A qualifying island is a water-enclosed landmass within the adjustable tile limit, which defaults to 180 world tiles. **Require sole settlement** is on by default and counts all factions. The terrain preview plots both factors as percentages. Smoothed-surface wealth is under Effects. Its default multiplier of 0 excludes smoothed floors and walls from Base before the formula.
+Formula shows the enabled deterrence and terrain terms. **Biome strength** is the exponent in `k_biome = settlement weight ^ strength` and ranges from 0 to 3. `k_island` ranges from 0 to 1 and defaults to 0.2. A qualifying island is a water-enclosed landmass within the adjustable tile limit, which defaults to 180 world tiles. **Require sole settlement** is on by default and counts all factions. The terrain preview plots both factors as percentages. Smoothed-surface wealth is under Options. Its default multiplier of 0 excludes smoothed floors and walls from Base before the formula.
 
-Tabs follow the Formula help in this order: **Formula, Remains, Reputation, Hazards, Curves, Summary, Effects, Presets**. **Formula > Options > Colony size scaling** reveals scaling controls, sample colonist inputs, and extra Summary columns. Existing colony scaling applies with the controls hidden. Curves keeps the live plot visible while you scroll the controls. Hazards lists installed conditions. Acid Rain and Toxic Rain appear when a mod supplies their definitions. Toxic Fallout is a separate base-game event.
+Tabs follow the Formula help in this order: **Formula, Remains, Reputation, Hazards, Curves, Summary, Options, Presets**. **Options > Colony size scaling** reveals scaling controls, sample colonist inputs, and extra Summary columns. Existing colony scaling applies with the controls hidden. Curves keeps the live plot visible while you scroll the controls. Hazards lists installed conditions. Acid Rain and Toxic Rain appear when a mod supplies their definitions. Toxic Fallout is a separate base-game event.
 
 A qualifying animal death adds **3 reputation per combat power** by default. Its body contributes **1 deterrence per combat power** while kept or buried. Royalty's psychic droner and toxic spewer each start at **1,000 per day** while their regional condition affects the colony. Each device type has its own hazard balance.
 
@@ -34,11 +34,11 @@ Individual status is saved at death. A raider can be Hostile and a prisoner from
 
 ## Faction overrides
 
-Enable **Faction overrides** under **Formula > Options**, then select a faction type from **Settings for**. In a loaded colony the selector shows world names followed by the shared type in parentheses. Each faction inherits Global values until you edit a control. This includes switches, individual source weights, growth and fade settings, the biome and island factors, and the surface multiplier. Summary follows the selected scope. **Reset to Global** clears all overrides for that faction. **Apply & save** refreshes the colony.
+Enable **Faction overrides** under **Options**, then select a faction type from **Settings for**. In a loaded colony the selector shows world names followed by the shared type in parentheses. Each faction inherits Global values until you edit a control. This includes switches, individual source weights, growth and fade settings, the biome and island factors, and the surface multiplier. Summary follows the selected scope. **Reset to Global** clears all overrides for that faction. **Apply & save** refreshes the colony.
 
 Overrides size ordinary enemy raids after faction selection. Global still supplies the starting budget used to select the faction, as well as the shared meters and history. Scripted raid budgets keep their assigned points. Faction balances begin with the current Global balances when a source or curve is first customized. From then on they use their own weights and timing as new events occur.
 
-Open meters from the shield beside **World**, or use **Formula > Options > Open meters**.
+Open meters from the shield beside **World**, or use **Open meters** at the bottom of Formula.
 
 ## Curves
 

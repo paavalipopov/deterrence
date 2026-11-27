@@ -2,8 +2,8 @@
 
 ## 0.14.0
 
-- Misc is now **Effects**: smoothed surfaces, quests, who comes to the colony, and how raiders fight.
-- Added **Apply to quests** under Effects. When it is off, quests and quest sites size their threats and rewards from the game's own threat wealth.
+- Misc is now **Options**. It also holds **Colony size scaling** and **Faction overrides**, moved from Formula, and the new quest, arrival and raider settings.
+- Added **Apply to quests** under Options. When it is off, quests and quest sites size their threats and rewards from the game's own threat wealth.
 - Added the built-in **Smart** preset. Waster pirates ignore pollution and toxic hazards, insects ignore remains and reputation, and mechanoids ignore hazards.
 - Faction profiles now also size infestations (Insect) and mech clusters and crashed ship parts (Mechanoid).
 - Remains pass the total value of kept bodies through the hazard growth curve, so large graveyards count less per body. Existing colonies see their remains total recalculated on load. A removed body fades its marginal contribution.
