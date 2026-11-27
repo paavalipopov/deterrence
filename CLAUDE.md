@@ -34,8 +34,9 @@ Run these from `C:\RimTest\repo\Deterrence`. `Build.ps1` and `Tools\Inspect-Api.
 
 ## Current state
 
-- Committed: per-class Harmony patching, status-at-death body discovery, wild-only maddened animals, Apply to quests, faster hourly scans, docs.
-- Not committed, and not yet built or tested. `Assemblies\Deterrence.dll` predates these changes until the next build:
+- Branch `next-version` holds all work after 0.13.1 and is pushed. GitHub's `main` is still 0.13.1.
+- Committed on `next-version`:
+    - Per-class Harmony patching, status-at-death body discovery, wild-only maddened animals, Apply to quests, faster hourly scans.
     - The Misc tab is renamed Effects: smoothed surfaces, quests, arrivals and raiders.
     - Built-in Smart preset: waster pirates ignore pollution and toxic hazards, insects ignore remains and reputation, mechanoids ignore hazards.
     - Faction profiles also size infestations (Insect) and mech clusters and crashed ship parts (Mechanoid).
@@ -44,7 +45,18 @@ Run these from `C:\RimTest\repo\Deterrence`. `Build.ps1` and `Tools\Inspect-Api.
     - Raid skip: human enemy raids are called off with chance s x (1 - r)^p, using the raiding faction's r.
     - Raiders retreat after fewer losses as Reputation approaches the reference balance.
     - A raiding faction's own dead can weigh more in Remains.
-- `Tools\Link-DevelopmentMod.ps1` is not tracked by git yet.
+    - Test-bed support in `Build.ps1` and `Tools`, and `Assemblies\Deterrence.dll` rebuilt from this code.
+- Not yet verified: `Test.ps1`, `Tools\Test-Integration.ps1`, the headless storage test, and the in-game checks below.
+- In-game checks:
+    - Load the Smart preset, then spawn an infestation and a waster pirate raid in Dev mode. Their points should differ from Global.
+    - With Dev mode on, the log reports each skipped raid and arrival.
+    - Harvest a prisoner organ, save and reload, and send it out and back with a caravan. It should keep counting.
+    - The surface discount should match the value before the precomputed floor table.
+- Open work:
+    - Calibrate Remains and Hazards defaults on their shared growth curve.
+    - Decide whether small threats (single maddened animals) should use unadjusted points.
+    - Regenerate `Deterrence-Guide.html` with `Tools\Build-Guide.py`.
+    - When merging into `main`, trim this section.
 - The full design and its open questions are in `claude/next-version-plan.md`, in the Deterrence project on claude.ai.
 
 ## Game facts checked in 1.6.4871
