@@ -91,6 +91,23 @@ namespace Deterrence
             return adjusted <= float.MaxValue ? (float)adjusted : budget;
         }
 
+        // Share of Base that still counts as threat: 1 without deterrence, 0 when nothing counts.
+        public static double ThreatRatio(double threat, double baseWealth)
+            => CreditMath.Finite(threat) && CreditMath.Finite(baseWealth) && baseWealth > 0
+                ? Math.Max(0, Math.Min(1, threat / baseWealth)) : 1;
+
+        public static double SkipChance(double ratio, double strength, double exponent)
+            => Math.Min(1, CreditMath.Positive(strength))
+                * Math.Pow(1 - Math.Max(0, Math.Min(1, ratio)), Math.Max(0.01, CreditMath.Positive(exponent, 2)));
+
+        // Raiders retreat after a smaller share of losses as reputation approaches the reference amount.
+        public static double RetreatFraction(double vanilla, double reputation, double reference, double factor)
+        {
+            double reach = Math.Min(1, CreditMath.Positive(reputation) / Math.Max(1, CreditMath.Positive(reference, 10000)));
+            double target = Math.Max(0, Math.Min(1, CreditMath.Positive(factor, 1)));
+            return CreditMath.Positive(vanilla) * (1 - (1 - target) * reach);
+        }
+
         public static double BiomeMultiplier(double settlementWeight, double exponent, bool enabled)
         {
             if (!enabled) return 1;

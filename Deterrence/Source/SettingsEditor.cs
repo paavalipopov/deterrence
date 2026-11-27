@@ -81,7 +81,7 @@ namespace Deterrence
             if (tab == (int)SettingsSection.Formula) DrawFormula(content, effective, settings);
             else if (tab == (int)SettingsSection.Curves) DrawCurves(content, effective);
             else if (tab == (int)SettingsSection.Summary) DrawSummary(content, effective);
-            else if (tab == (int)SettingsSection.Misc) DrawMisc(content, effective);
+            else if (tab == (int)SettingsSection.Effects) DrawEffects(content, effective, settings);
             else DrawSources(content, effective);
             effective.Sanitize();
             if (before != null) SaveFactionEdits(settings, overrides, before, effective);
@@ -124,12 +124,6 @@ namespace Deterrence
                     "The colony must be the only settlement on the island. Settlements from all factions count.");
             }
             if (settings.BiomeWealthScaling || settings.IslandWealthScaling) DrawTerrainPreview(listing, settings);
-            if (factionKey == null)
-            {
-                listing.Gap(6);
-                HelpUI.Checkbox(listing, "Apply to quests", ref global.AdjustQuests,
-                    "Quests and quest sites take threat points from the combined threat wealth of your colonies. Their rewards scale with those points. When on, the formula above also lowers quest threats and rewards. When off, quests use the game's own threat wealth.", true);
-            }
             listing.GapLine();
             SectionTitle(listing, "Settings guide");
             listing.Label("Remains: bodies and locally harvested prisoner organs kept at the colony.");
@@ -137,7 +131,7 @@ namespace Deterrence
             listing.Label("Hazards: pollution, regional devices, toxic weather, hives, and outdoor extremes.");
             listing.Label("Curves: change growth and fading.");
             listing.Label("Summary: compare contributions by source and review the current formula.");
-            listing.Label("Misc: separate game-wealth adjustments, including smoothed surfaces.");
+            listing.Label("Effects: smoothed surfaces, quests, who comes to the colony, and how raiders fight.");
             listing.Label("Presets: save or restore a named set of settings.");
             listing.GapLine();
             SectionTitle(listing, "Options");
@@ -145,7 +139,7 @@ namespace Deterrence
                 "Shows controls for colony size scaling, sample colonist inputs, and extra Summary columns. Existing scaling applies with the controls hidden.");
             if (factionKey == null)
                 HelpUI.Checkbox(listing, "Faction overrides", ref global.FactionOverridesEnabled,
-                    "Shows a faction selector on settings tabs. Overrides apply after the game chooses a faction for an ordinary enemy raid.");
+                    "Shows a faction selector on settings tabs. Overrides apply after the game chooses a faction for an ordinary enemy raid. Infestations use the Insect profile; mech clusters and crashed ship parts use the Mechanoid profile.");
             if (Current.Game != null && listing.ButtonText("Open meters")) OpenMeters();
             generalHeight = listing.CurHeight + 20; listing.End(); Widgets.EndScrollView();
         }
@@ -186,7 +180,7 @@ namespace Deterrence
             DeterrenceGraphs.Draw(listing.GetRect(210), terrainCurves, 0, 100, "Biome settlement weight (%)", 100);
         }
 
-        private void DrawMisc(Rect rect, DeterrenceSettings settings)
+        private void DrawEffects(Rect rect, DeterrenceSettings settings, DeterrenceSettings global)
         {
             Rect view = new Rect(0, 0, rect.width - 20, Math.Max(rect.height, miscHeight));
             Widgets.BeginScrollView(rect, ref miscScroll, view);
@@ -202,7 +196,38 @@ namespace Deterrence
                     .SurfaceDiscountFor(Find.CurrentMap, settings.SmoothedSurfaceMultiplier);
                 listing.Label("Current map surface discount: " + F(discount) + " (last refresh).");
             }
+            if (factionKey == null) DrawGlobalEffects(listing, global);
+            else
+            {
+                listing.Gap();
+                listing.Label("Quest, arrival and raider settings are global. A faction profile still changes r for its own raids.");
+            }
             miscHeight = listing.CurHeight + 20; listing.End(); Widgets.EndScrollView();
+        }
+
+        private void DrawGlobalEffects(Listing_Standard listing, DeterrenceSettings global)
+        {
+            listing.GapLine();
+            SectionTitle(listing, "Quests");
+            HelpUI.Checkbox(listing, "Apply to quests", ref global.AdjustQuests,
+                "Quests and quest sites take threat points from the combined threat wealth of your colonies. Their rewards scale with those points. When on, the formula also lowers quest threats and rewards. When off, quests use the game's own threat wealth.");
+
+            listing.GapLine();
+            SectionTitle(listing, "Who comes");
+            listing.Label("r = Threat / Base for a colony map. It is 1 without deterrence and falls toward 0 as deterrence and the terrain factors remove threat wealth.");
+            HelpUI.Checkbox(listing, "Turn away arrivals", ref global.DeterArrivals,
+                "Trader caravans, visitor groups, travelers and wanderers joining are skipped with chance (1 − r)^p. Drop pods and orbital traders are unaffected.");
+            GlobalSlider(listing, "Raid skip strength", ref global.RaidSkipStrength, 0, 1, 0.05f, fraction: true, symbol: "s");
+            GlobalSlider(listing, "Skip exponent", ref global.SkipExponent, 0.25f, 4, 0.05f, symbol: "p");
+            listing.Label("Skip chance for arrivals and raids:");
+            foreach (double r in new[] { 0.8, 0.5, 0.2 })
+                listing.Label("• r = " + r.ToString("0.0") + ": arrivals " + (global.DeterArrivals ? SourceMath.SkipChance(r, 1, global.SkipExponent).ToString("P0") : "off")
+                    + ", raids " + SourceMath.SkipChance(r, global.RaidSkipStrength, global.SkipExponent).ToString("P0"));
+
+            listing.GapLine();
+            SectionTitle(listing, "Raiders");
+            GlobalSlider(listing, "Retreat point at reference reputation", ref global.RetreatFactor, 0.1f, 1, 0.05f, fraction: true);
+            GlobalSlider(listing, "Weight of a faction's own dead", ref global.OwnDeadWeight, 1, 5, 0.1f);
         }
 
         private static void OpenMeters()

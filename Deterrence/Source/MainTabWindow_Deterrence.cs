@@ -56,7 +56,7 @@ namespace Deterrence
                 + "     Threat: " + Money(map.PlayerWealthForStoryteller));
             string notice = Find.Storyteller.difficulty.fixedWealthMode ? "Wealth-independent mode: deterrence is tracked only."
                 : !map.IsPlayerHome || map.IsPocketMap ? "Adjustments apply on home maps."
-                : !DeterrenceMod.Settings.Enabled ? "Deterrence subtraction is off. Terrain and Misc settings still apply."
+                : !DeterrenceMod.Settings.Enabled ? "Deterrence subtraction is off. Terrain and Effects settings still apply."
                 : "Population and other threat factors still apply.";
             double factor = SourceMath.BiomeMultiplier(map.Biome.settlementSelectionWeight,
                 settings.BiomeExponent, settings.BiomeWealthScaling && applies);

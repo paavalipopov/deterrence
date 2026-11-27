@@ -29,6 +29,8 @@ namespace Deterrence
             Scribe_Values.Look(ref LastEvent, "lastEvent");
             Scribe_Values.Look(ref MapId, "mapId");
             Scribe_Values.Look(ref CorpseId, "corpseId", -1);
+            Scribe_Values.Look(ref FactionId, "factionId", -1);
+            Scribe_Values.Look(ref RawCredit, "rawCredit");
             Scribe_Values.Look(ref CombatPower, "combatPower");
             Scribe_Values.Look(ref OriginalGearValue, "originalGearValue");
             Scribe_Values.Look(ref GearSnapshotKnown, "gearSnapshotKnown");
@@ -50,6 +52,7 @@ namespace Deterrence
                 Shares = Shares ?? new System.Collections.Generic.List<ReputationShare>();
                 Shares.RemoveAll(s => s == null || !CreditMath.Finite(s.Amount) || s.Amount <= 0);
                 Balance = CreditMath.Positive(Balance);
+                RawCredit = CreditMath.Positive(RawCredit);
                 Exposure = CreditMath.Positive(Exposure);
                 RateClock = CreditMath.Positive(RateClock);
                 ActiveArea = CreditMath.Positive(ActiveArea);

@@ -54,6 +54,10 @@ namespace Deterrence
         }
 
         public double FromZero(double rate, double days) => Earn(rate, days, 0, 0, out _);
+
+        // Maintained stocks such as remains pass their raw total through the exposure-scale curve.
+        public double Stock(double raw)
+            => CreditMath.Finite(raw) && raw > 0 ? new HazardGrowth(false, Scale, Days, Shape).Earn(raw, 1, 0, 0, out _) : 0;
     }
 
     // No RimWorld dependencies: also compiled directly into the test harness.

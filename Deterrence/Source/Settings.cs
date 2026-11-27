@@ -15,6 +15,12 @@ namespace Deterrence
         public bool Reputation = true;
         // Quests and quest sites read world threat wealth; this decides whether the formula applies there.
         public bool AdjustQuests = true;
+        // Effects beyond threat size. All are global and off at their defaults.
+        public bool DeterArrivals;
+        public float RaidSkipStrength;
+        public float SkipExponent = 2;
+        public float RetreatFactor = 1;
+        public float OwnDeadWeight = 1;
         public float RecoveryExponent = 0.5f;
         public bool FadeByHistory;
         public float FadeReferenceArea = 20000;
@@ -36,6 +42,8 @@ namespace Deterrence
         public float GrowthShape = 1;
         public float SlowdownDays = 10;
         internal HazardGrowth Growth => new HazardGrowth(GrowthByRate, SlowdownScale, SlowdownDays, GrowthShape);
+        // Remains are a stock, so they always use the exposure-scale form of the hazard curve.
+        internal HazardGrowth RemainsGrowth => new HazardGrowth(false, SlowdownScale, SlowdownDays, GrowthShape);
         internal double FadeDuration(double balance, double area, bool hazard)
             => CreditMath.Duration(hazard && FadeByHistory ? area : balance, RecoveryDays,
                 hazard && FadeByHistory ? FadeReferenceArea : RecoveryReference, RecoveryExponent);
@@ -86,6 +94,11 @@ namespace Deterrence
             TemperaturePerDay = copy.TemperaturePerDay;
             ShowAdvancedColonyScaling = copy.ShowAdvancedColonyScaling;
             AdjustQuests = copy.AdjustQuests;
+            DeterArrivals = copy.DeterArrivals;
+            RaidSkipStrength = copy.RaidSkipStrength;
+            SkipExponent = copy.SkipExponent;
+            RetreatFactor = copy.RetreatFactor;
+            OwnDeadWeight = copy.OwnDeadWeight;
             FactionOverridesEnabled = copy.FactionOverridesEnabled;
             FactionOverrides = copy.FactionOverrides;
             Rules = copy.Rules;
@@ -212,6 +225,11 @@ namespace Deterrence
             Scribe_Values.Look(ref Conditions, "conditions", true);
             Scribe_Values.Look(ref Reputation, "reputation", true);
             Scribe_Values.Look(ref AdjustQuests, "adjustQuests", true);
+            Scribe_Values.Look(ref DeterArrivals, "deterArrivals");
+            Scribe_Values.Look(ref RaidSkipStrength, "raidSkipStrength");
+            Scribe_Values.Look(ref SkipExponent, "skipExponent", 2);
+            Scribe_Values.Look(ref RetreatFactor, "retreatFactor", 1);
+            Scribe_Values.Look(ref OwnDeadWeight, "ownDeadWeight", 1);
             Scribe_Values.Look(ref FadeByHistory, "fadeByHistory");
             Scribe_Values.Look(ref FadeReferenceArea, "fadeReferenceArea", 20000);
             Scribe_Values.Look(ref RecoveryExponent, "recoveryExponent", 0.5f);
@@ -302,6 +320,10 @@ namespace Deterrence
             GrowthShape = Mathf.Clamp01((float)CreditMath.Positive(GrowthShape, 1));
             SlowdownDays = Mathf.Clamp((float)CreditMath.Positive(SlowdownDays, 10), 0.1f, 120);
             FadeReferenceArea = Mathf.Clamp((float)CreditMath.Positive(FadeReferenceArea, 20000), 100, 1000000);
+            RaidSkipStrength = Mathf.Clamp01((float)CreditMath.Positive(RaidSkipStrength));
+            SkipExponent = Mathf.Clamp((float)CreditMath.Positive(SkipExponent, 2), 0.25f, 4);
+            RetreatFactor = Mathf.Clamp((float)CreditMath.Positive(RetreatFactor, 1), 0.1f, 1);
+            OwnDeadWeight = Mathf.Clamp((float)CreditMath.Positive(OwnDeadWeight, 1), 1, 5);
             EnsureBuiltins();
             foreach (var rule in Rules)
             {

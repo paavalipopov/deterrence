@@ -8,6 +8,9 @@ namespace Deterrence
         public string LastEvent;
         public int MapId;
         public int CorpseId = -1;
+        // Faction at death and uncurved value of a maintained body.
+        public int FactionId = -1;
+        public double RawCredit;
         public float CombatPower;
         public double OriginalGearValue;
         public bool GearSnapshotKnown;

@@ -82,6 +82,15 @@ namespace Deterrence
                 GlobalSlider(listing, "Exposure scale", ref settings.SlowdownScale, 100, 1000000, 100, symbol: "K");
             }
             listing.Label("After 10 days at 2,000/day: " + F(settings.Growth.FromZero(2000, 10)) + " deterrence.");
+
+            // Remains are a stock, so they always use K, even when hazards time their slowdown by rate.
+            listing.Gap(6);
+            listing.Label("Remains pass the total value of kept bodies through the same curve, with shape p and exposure scale K.");
+            if (settings.GrowthByRate)
+                GlobalSlider(listing, "Exposure scale", ref settings.SlowdownScale, 100, 1000000, 100, symbol: "K");
+            var remains = settings.RemainsGrowth;
+            listing.Label("Bodies worth 5,000, 20,000 and 60,000 count as " + F(remains.Stock(5000)) + ", "
+                + F(remains.Stock(20000)) + " and " + F(remains.Stock(60000)) + ".");
         }
 
         private void DrawFading(Listing_Standard listing, DeterrenceSettings settings)

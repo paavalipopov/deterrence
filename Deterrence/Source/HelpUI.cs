@@ -33,7 +33,7 @@ namespace Deterrence
             string name = "Threat" + (settings.Enabled ? "Deterrence" : "")
                 + (settings.BiomeWealthScaling ? "Biome" : "") + (settings.IslandWealthScaling ? "Island" : "");
             Equation(listing, name, SourceMath.ThreatWealthFormula(settings.Enabled, settings.BiomeWealthScaling, settings.IslandWealthScaling),
-                "Base is the colony's wealth input after Misc adjustments. The storyteller uses Threat along with population, adaptation, and difficulty to calculate threat points.", centered: centered);
+                "Base is the colony's wealth input after Effects adjustments. The storyteller uses Threat along with population, adaptation, and difficulty to calculate threat points.", centered: centered);
         }
 
         private static EquationImage EquationTexture(string name)

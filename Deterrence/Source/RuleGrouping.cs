@@ -2,7 +2,7 @@ using System;
 
 namespace Deterrence
 {
-    public enum SettingsSection { Formula, Remains, Reputation, Hazards, Curves, Summary, Misc, Presets }
+    public enum SettingsSection { Formula, Remains, Reputation, Hazards, Curves, Summary, Effects, Presets }
 
     public static class RuleGrouping
     {

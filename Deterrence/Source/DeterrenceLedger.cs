@@ -14,6 +14,9 @@ namespace Deterrence
         private readonly HashSet<string> seen = new HashSet<string>();
         private readonly Dictionary<int, Thing> sourceTargets = new Dictionary<int, Thing>();
         private readonly Dictionary<int, List<OrganStockValues>> organStock = new Dictionary<int, List<OrganStockValues>>();
+        // Raw value of maintained bodies by map, and by map and faction at death.
+        private readonly Dictionary<int, double> rawRemains = new Dictionary<int, double>();
+        private readonly Dictionary<(int map, int faction), double> rawRemainsByFaction = new Dictionary<(int map, int faction), double>();
         private readonly bool trackDetails;
         public string ProfileId;
 
@@ -26,6 +29,20 @@ namespace Deterrence
             => organStock.TryGetValue(mapId, out var stock) ? stock : Enumerable.Empty<OrganStockValues>();
         internal double CreditFor(Map map)
             => map != null && totals.TryGetValue(map.uniqueID, out double credit) ? credit : 0;
+
+        // A raiding faction weighs the bodies of its own members more before the remains curve.
+        internal double CreditFor(Map map, int factionId, double ownWeight, HazardGrowth growth)
+        {
+            double credit = CreditFor(map);
+            if (map == null || factionId < 0 || ownWeight <= 1
+                || !rawRemainsByFaction.TryGetValue((map.uniqueID, factionId), out double own) || own <= 0) return credit;
+            rawRemains.TryGetValue(map.uniqueID, out double raw);
+            return Math.Max(0, credit - growth.Stock(raw) + growth.Stock(raw + (ownWeight - 1) * own));
+        }
+
+        internal double ReputationFor(Map map)
+            => map != null && byKey.TryGetValue(RuleGrouping.ReputationMeter(map.uniqueID), out var entry)
+                ? CreditMath.Positive(entry.Balance) : 0;
 
         public void ExposeData()
         {
@@ -52,6 +69,7 @@ namespace Deterrence
                 return false;
             });
             RebuildTotals();
+            IndexRawRemains();
         }
 
         internal DeterrenceLedger Branch(string profileId, double day)
@@ -83,6 +101,7 @@ namespace Deterrence
         internal void FinishSample(double day, DeterrenceSettings settings)
         {
             EndUnseenSources(day, settings);
+            ScaleRemains(settings.RemainsGrowth);
             entries.RemoveAll(entry => {
                 if (entry.Active || entry.Balance > 0) return false;
                 byKey.Remove(entry.Key);
@@ -98,6 +117,7 @@ namespace Deterrence
             {
                 entries.Remove(entry); byKey.Remove(entry.Key);
             }
+            FadeRemovedRemains(settings.RemainsGrowth);
             foreach (var entry in entries)
             {
                 if (entry.Active && !seen.Contains(entry.Key))
@@ -108,8 +128,48 @@ namespace Deterrence
                         settings.RecoveryExponent, useArea: useArea);
                     entry.LastRawRate = 0;
                     entry.DailyGain = 0;
-                    if (entry.CorpseId >= 0) { entry.Buried = false; entry.Quantity = 0; }
+                    if (entry.CorpseId >= 0) { entry.Buried = false; entry.Quantity = 0; entry.RawCredit = 0; }
                 }
+            }
+        }
+
+        private static bool IsMaintainedBody(LedgerEntry entry) => entry.Active && entry.CorpseId >= 0;
+
+        private void IndexRawRemains()
+        {
+            rawRemains.Clear();
+            rawRemainsByFaction.Clear();
+            foreach (var entry in entries)
+            {
+                if (!IsMaintainedBody(entry) || entry.RawCredit <= 0) continue;
+                rawRemains.TryGetValue(entry.MapId, out double total);
+                rawRemains[entry.MapId] = total + entry.RawCredit;
+                var key = (entry.MapId, entry.FactionId);
+                rawRemainsByFaction.TryGetValue(key, out double own);
+                rawRemainsByFaction[key] = own + entry.RawCredit;
+            }
+        }
+
+        // Pass each map's maintained bodies through the remains curve. Each body keeps a proportional share.
+        private void ScaleRemains(HazardGrowth growth)
+        {
+            IndexRawRemains();
+            var counted = rawRemains.ToDictionary(pair => pair.Key, pair => growth.Stock(pair.Value) / pair.Value);
+            foreach (var entry in entries)
+                if (IsMaintainedBody(entry) && entry.RawCredit > 0 && counted.TryGetValue(entry.MapId, out double share))
+                    entry.Balance = entry.RawCredit * share;
+        }
+
+        // Removed bodies fade their marginal contribution, so the total never jumps when one leaves.
+        private void FadeRemovedRemains(HazardGrowth growth)
+        {
+            var removed = entries.Where(e => IsMaintainedBody(e) && !seen.Contains(e.Key) && e.RawCredit > 0).ToList();
+            foreach (var group in removed.GroupBy(e => e.MapId))
+            {
+                if (!rawRemains.TryGetValue(group.Key, out double before) || before <= 0) continue;
+                double gone = Math.Min(before, group.Sum(e => e.RawCredit));
+                double fade = growth.Stock(before) - growth.Stock(before - gone);
+                foreach (var entry in group) entry.Balance = fade * entry.RawCredit / gone;
             }
         }
 
@@ -195,11 +255,13 @@ namespace Deterrence
                 if (credit <= 0) continue;
                 var entry = Observe(key, corpse.InnerPawn.LabelShort + " (remains)", "Remains", map, day);
                 entry.CorpseId = corpse.thingIDNumber;
+                entry.FactionId = corpse.InnerPawn.Faction?.loadID ?? -1;
                 if (trackDetails) sourceTargets[corpse.thingIDNumber] = corpse;
                 entry.Buried = DeterrenceGameComponent.IsBuried(corpse);
                 entry.Quantity = 1;
                 entry.CombatPower = (float)power;
                 entry.SourceKey = DeterrenceSettings.RemainsKey(corpse.InnerPawn);
+                entry.RawCredit = credit;
                 entry.Balance = credit;
                 entry.DailyGain = 0;
                 entry.LastSeenDay = day;
@@ -335,6 +397,7 @@ namespace Deterrence
             entry.SourceKey = "remains:" + kind;
             entry.MapId = map.uniqueID;
             entry.CorpseId = corpse.thingIDNumber;
+            entry.FactionId = pawn.Faction?.loadID ?? -1;
             if (trackDetails) sourceTargets[corpse.thingIDNumber] = corpse;
             entry.Buried = DeterrenceGameComponent.IsBuried(corpse);
             entry.Quantity = 1;
@@ -343,7 +406,9 @@ namespace Deterrence
             entry.LastSeenDay = day;
             entry.OriginalGearValue = 0;
             entry.GearSnapshotKnown = false;
-            entry.Balance = SourceMath.MaintainedRemains(entry.CombatPower, rule, map.mapPawns.FreeColonistsCount);
+            entry.RawCredit = SourceMath.MaintainedRemains(entry.CombatPower, rule, map.mapPawns.FreeColonistsCount);
+            entry.Balance = entry.RawCredit;
+            ScaleRemains(settings.RemainsGrowth);
             RebuildTotals();
         }
 

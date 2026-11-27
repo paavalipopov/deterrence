@@ -2,27 +2,32 @@ using System;
 using HarmonyLib;
 using RimWorld;
 using Verse;
+using Verse.AI.Group;
 
 namespace Deterrence
 {
     [HarmonyPatch(typeof(Map), nameof(Map.PlayerWealthForStoryteller), MethodType.Getter)]
     public static class ThreatWealthPatch
     {
+        // Set while reading the game's own value, such as Base for the threat ratio.
+        internal static bool Bypass;
+
         [HarmonyPriority(Priority.Last)]
         public static void Postfix(Map __instance, ref float __result)
         {
-            if (!__instance.IsPlayerHome || __instance.IsPocketMap
+            if (Bypass || !__instance.IsPlayerHome || __instance.IsPocketMap
                 || Current.Game == null || Find.Storyteller == null || Find.Storyteller.difficulty.fixedWealthMode) return;
             if (WorldThreatWealthPatch.Depth > 0 && !DeterrenceMod.Settings.AdjustQuests) return;
             var ledger = Current.Game.GetComponent<DeterrenceGameComponent>();
-            var profile = FactionRaidPoints.ProfileForEvaluation(__instance);
+            var context = FactionRaidPoints.ContextFor(__instance);
+            var profile = context?.Profile;
             var settings = profile?.Settings ?? DeterrenceMod.Settings;
             double factor = SourceMath.BiomeMultiplier(__instance.Biome.settlementSelectionWeight,
                 settings.BiomeExponent, settings.BiomeWealthScaling);
             float gameThreatWealth = CreditMath.EffectiveWealth(__result,
                 ledger?.SurfaceDiscountFor(__instance, settings.SmoothedSurfaceMultiplier) ?? 0);
             __result = (float)SourceMath.AdjustedThreatWealth(gameThreatWealth,
-                profile?.Ledger.CreditFor(__instance) ?? ledger?.CreditFor(__instance) ?? 0, settings.Enabled, factor,
+                ledger?.CreditFor(__instance, profile, context?.Faction) ?? 0, settings.Enabled, factor,
                 IslandGeography.FactorFor(__instance, settings));
         }
     }
@@ -39,6 +44,52 @@ namespace Deterrence
         {
             Depth--;
             return __exception;
+        }
+    }
+
+    // Hostile groups on a colony map retreat after fewer losses as the colony's reputation grows.
+    [HarmonyPatch(typeof(Trigger_FractionPawnsLost), nameof(Trigger_FractionPawnsLost.ActivateOn))]
+    public static class RetreatPatch
+    {
+        public static void Prefix(Lord lord, TriggerSignal signal, ref float ___fraction, out float __state)
+        {
+            __state = float.NaN;
+            var settings = DeterrenceMod.Settings;
+            if (settings.RetreatFactor >= 1 || signal.type != TriggerSignalType.PawnLost
+                || lord?.faction == null || !lord.faction.HostileTo(Faction.OfPlayer)) return;
+            var map = lord.Map;
+            var ledger = Current.Game?.GetComponent<DeterrenceGameComponent>();
+            if (map == null || !map.IsPlayerHome || ledger == null) return;
+            __state = ___fraction;
+            ___fraction = (float)SourceMath.RetreatFraction(___fraction, ledger.ReputationFor(map, lord.faction),
+                settings.RecoveryReference, settings.RetreatFactor);
+        }
+
+        public static void Finalizer(ref float ___fraction, float __state)
+        {
+            if (!float.IsNaN(__state)) ___fraction = __state;
+        }
+    }
+
+    // Trader caravans, visitors, travelers and wanderers come less often to deterred colonies.
+    [HarmonyPatch(typeof(Storyteller), nameof(Storyteller.TryFire))]
+    public static class ArrivalSkipPatch
+    {
+        private static readonly System.Collections.Generic.HashSet<string> Arrivals = new System.Collections.Generic.HashSet<string>
+            { "TraderCaravanArrival", "VisitorGroup", "TravelerGroup", "WandererJoin", "WandererJoinAbasia" };
+
+        public static bool Prefix(FiringIncident fi, ref bool __result)
+        {
+            var settings = DeterrenceMod.Settings;
+            if (!settings.DeterArrivals || fi?.def == null || !Arrivals.Contains(fi.def.defName)
+                || !(fi.parms?.target is Map map) || !map.IsPlayerHome || map.IsPocketMap
+                || Find.Storyteller?.difficulty.fixedWealthMode != false) return true;
+            double chance = SourceMath.SkipChance(FactionRaidPoints.ThreatRatio(map, null, null), 1, settings.SkipExponent);
+            int seed = Gen.HashCombineInt(Find.TickManager.TicksGame, Gen.HashCombineInt(map.uniqueID, fi.def.shortHash));
+            if (!Rand.ChanceSeeded((float)chance, seed)) return true;
+            if (Prefs.DevMode) Log.Message("[Deterrence] Skipped " + fi.def.defName + " (" + chance.ToString("P0") + " chance).");
+            __result = false;
+            return false;
         }
     }
 

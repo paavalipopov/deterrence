@@ -17,6 +17,11 @@ namespace Deterrence
             global.Add(new XElement("FactionOverridesEnabled", snapshot.FactionOverridesEnabled),
                 new XElement("ShowAdvancedColonyScaling", snapshot.ShowAdvancedColonyScaling),
                 new XElement("AdjustQuests", snapshot.AdjustQuests),
+                new XElement("DeterArrivals", snapshot.DeterArrivals),
+                new XElement("RaidSkipStrength", snapshot.RaidSkipStrength),
+                new XElement("SkipExponent", snapshot.SkipExponent),
+                new XElement("RetreatFactor", snapshot.RetreatFactor),
+                new XElement("OwnDeadWeight", snapshot.OwnDeadWeight),
                 new XElement("CorpsePerCombatPower", snapshot.CorpsePerCombatPower),
                 new XElement("FalloutPerDay", snapshot.FalloutPerDay),
                 new XElement("TemperaturePerDay", snapshot.TemperaturePerDay));
@@ -42,6 +47,11 @@ namespace Deterrence
                     snapshot.FactionOverridesEnabled = ReadOptional(global, "FactionOverridesEnabled", 0) != 0;
                     snapshot.ShowAdvancedColonyScaling = ReadOptional(global, "ShowAdvancedColonyScaling", 0) != 0;
                     snapshot.AdjustQuests = ReadOptional(global, "AdjustQuests", 1) != 0;
+                    snapshot.DeterArrivals = ReadOptional(global, "DeterArrivals", 0) != 0;
+                    snapshot.RaidSkipStrength = ReadOptional(global, "RaidSkipStrength", snapshot.RaidSkipStrength);
+                    snapshot.SkipExponent = ReadOptional(global, "SkipExponent", snapshot.SkipExponent);
+                    snapshot.RetreatFactor = ReadOptional(global, "RetreatFactor", snapshot.RetreatFactor);
+                    snapshot.OwnDeadWeight = ReadOptional(global, "OwnDeadWeight", snapshot.OwnDeadWeight);
                     snapshot.CorpsePerCombatPower = ReadOptional(global, "CorpsePerCombatPower", snapshot.CorpsePerCombatPower);
                     snapshot.FalloutPerDay = ReadOptional(global, "FalloutPerDay", snapshot.FalloutPerDay);
                     snapshot.TemperaturePerDay = ReadOptional(global, "TemperaturePerDay", snapshot.TemperaturePerDay);

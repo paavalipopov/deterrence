@@ -636,6 +636,31 @@ internal static class Program
             Require(IslandLandmass.FindEnclosed(-1, tile => tile == -1, tile => false, (tile, neighbors) => { }) == null,
                 "Water tile treated as an island");
         });
+        Check("remains stock follows the hazard curve and ignores rate timing", () =>
+        {
+            Equal(20000 * Math.Log(1.25), new HazardGrowth(false, 20000, 10, 1).Stock(5000), 0.001);
+            Equal(20000 * Math.Log(4), new HazardGrowth(true, 20000, 10, 1).Stock(60000), 0.001);
+            Equal(5000, new HazardGrowth(false, 20000, 10, 0).Stock(5000), 0.000001);
+            Equal(0, new HazardGrowth(false, 20000, 10, 1).Stock(0));
+            var growth = new HazardGrowth(false, 20000, 10, 0.5);
+            Require(growth.Stock(40000) < 2 * growth.Stock(20000), "Remains stock should grow with diminishing returns");
+        });
+        Check("threat ratio, skip chance and retreat point stay within their ranges", () =>
+        {
+            Equal(0.5, SourceMath.ThreatRatio(5000, 10000));
+            Equal(1, SourceMath.ThreatRatio(5000, 0));
+            Equal(0, SourceMath.ThreatRatio(-1, 10000));
+            Equal(1, SourceMath.ThreatRatio(20000, 10000));
+            Equal(0.25, SourceMath.SkipChance(0.5, 1, 2));
+            Equal(0.125, SourceMath.SkipChance(0.5, 0.5, 2));
+            Equal(0, SourceMath.SkipChance(1, 1, 2));
+            Equal(1, SourceMath.SkipChance(0, 1, 2));
+            Equal(0, SourceMath.SkipChance(0.2, 0, 2));
+            Equal(0.5, SourceMath.RetreatFraction(0.5, 0, 10000, 0.6));
+            Equal(0.4, SourceMath.RetreatFraction(0.5, 5000, 10000, 0.6), 0.000001);
+            Equal(0.3, SourceMath.RetreatFraction(0.5, 20000, 10000, 0.6), 0.000001);
+            Equal(0.5, SourceMath.RetreatFraction(0.5, 20000, 10000, 1));
+        });
         Console.WriteLine("All " + passed + " checks passed.");
     }
 }

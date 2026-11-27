@@ -47,6 +47,18 @@ namespace Deterrence
 
         public double CreditFor(Map map) => globalLedger.CreditFor(map);
 
+        // Credit seen by a faction profile, with that faction's own dead weighted when the setting applies.
+        internal double CreditFor(Map map, ResolvedFaction profile, Faction faction)
+        {
+            var ledger = profile?.Ledger ?? globalLedger;
+            var settings = profile?.Settings ?? DeterrenceMod.Settings;
+            return faction == null ? ledger.CreditFor(map)
+                : ledger.CreditFor(map, faction.loadID, DeterrenceMod.Settings.OwnDeadWeight, settings.RemainsGrowth);
+        }
+
+        internal double ReputationFor(Map map, Faction faction)
+            => (FactionSettingsFor(faction?.def?.defName)?.Ledger ?? globalLedger).ReputationFor(map);
+
         internal ResolvedFaction FactionSettingsFor(string factionKey)
         {
             if (!DeterrenceMod.Settings.FactionOverridesEnabled || string.IsNullOrEmpty(factionKey)) return null;

@@ -17,13 +17,14 @@ namespace Deterrence
         private SettingsPreset selectedPreset;
         private Vector2 presetDetailsScroll, presetListScroll;
         private float presetDetailsHeight = 500;
-        private SettingsPreset builtInDefaults;
+        private SettingsPreset builtInDefaults, builtInSmart;
 
         private void DrawPresets(Rect rect, DeterrenceMod owner, DeterrenceSettings settings)
         {
             if (presetFiles == null)
                 presetFiles = new PresetFiles(Path.Combine(GenFilePaths.ConfigFolderPath, "Deterrence", "Presets"));
             if (builtInDefaults == null) builtInDefaults = SettingsPreset.CreateDefaults();
+            if (builtInSmart == null) builtInSmart = SettingsPreset.CreateSmart();
             if (presetsNeedRefresh) RefreshPresets(owner, settings);
             float width = rect.width * 0.61f;
             const float gap = 16;
@@ -114,14 +115,14 @@ namespace Deterrence
             {
                 var preset = filePresets[i];
                 var row = new Rect(0, i * 36, view.width, 32);
-                if (Widgets.ButtonText(row, (preset.IsBuiltIn ? "Defaults (built-in)" : preset.Name).Truncate(view.width - 24)))
+                if (Widgets.ButtonText(row, (preset.IsBuiltIn ? preset.Name + " (built-in)" : preset.Name).Truncate(view.width - 24)))
                 {
                     selectedPreset = preset;
                     presetDetailsScroll = Vector2.zero;
                     presetNotice = "";
                 }
                 if (preset == selectedPreset) Widgets.DrawHighlightSelected(row);
-                TooltipHandler.TipRegion(row, preset.IsBuiltIn ? "Built-in mod defaults" : preset.SelectionId);
+                TooltipHandler.TipRegion(row, preset.IsBuiltIn ? preset.Description : preset.SelectionId);
             }
             Widgets.EndScrollView();
         }
@@ -155,7 +156,8 @@ namespace Deterrence
 
         private string RequestSavePreset(string name, DeterrenceMod owner, DeterrenceSettings settings)
         {
-            if (string.Equals(name, builtInDefaults.Name, StringComparison.OrdinalIgnoreCase)) return "Choose a new name for your preset.";
+            if (string.Equals(name, builtInDefaults.Name, StringComparison.OrdinalIgnoreCase)
+                || string.Equals(name, builtInSmart.Name, StringComparison.OrdinalIgnoreCase)) return "Choose a new name for your preset.";
             var matches = filePresets.Where(preset => string.Equals(preset.Name, name, StringComparison.OrdinalIgnoreCase)).ToList();
             if (matches.Count > 1) return "Several files use this name. Choose a unique name.";
             var previous = matches.FirstOrDefault();
@@ -225,6 +227,7 @@ namespace Deterrence
             {
                 filePresets.Clear();
                 filePresets.Add(builtInDefaults);
+                filePresets.Add(builtInSmart);
                 selectedPreset = builtInDefaults;
                 var loaded = presetFiles.ReadAll(unreadable);
                 filePresets.AddRange(loaded);
