@@ -20,7 +20,16 @@ namespace Deterrence
         {
             var provenance = piece.TryGetComp<CompPrisonerOrgan>();
             if (provenance != null) provenance.HarvestedLocallyFromPrisoner = HarvestedLocallyFromPrisoner;
+            if (HarvestedLocallyFromPrisoner) Track(piece);
         }
+
+        // Register tagged organs that arrive on a map, such as after a caravan returns.
+        public override void PostSpawnSetup(bool respawningAfterLoad)
+        {
+            if (HarvestedLocallyFromPrisoner) Track(parent);
+        }
+
+        private static void Track(Thing thing) => Current.Game?.GetComponent<DeterrenceGameComponent>()?.TrackOrgan(thing);
 
         public override string CompInspectStringExtra()
             => HarvestedLocallyFromPrisoner ? "Prisoner organ: harvested locally" : null;

@@ -34,6 +34,9 @@ namespace Deterrence
         internal double SurfaceDiscountFor(Map map, float multiplier) => SourceMath.SurfaceDiscount(
             surfaceWealth.TryGetValue(map.uniqueID, out var value) ? value : 0, multiplier);
         public IEnumerable<OrganStockValues> OrganStockFor(int mapId) => globalLedger.OrganStockFor(mapId);
+        // Tagged prisoner organs anywhere in the game. Each map sample keeps the ones it holds.
+        private readonly HashSet<Thing> trackedOrgans = new HashSet<Thing>();
+        internal void TrackOrgan(Thing thing) { if (thing != null && !thing.Destroyed) trackedOrgans.Add(thing); }
         private List<int> creditedDeaths = new List<int>();
         private readonly HashSet<int> deathIds = new HashSet<int>();
 
@@ -103,8 +106,22 @@ namespace Deterrence
 
         public override void FinalizeInit()
         {
+            FindTaggedOrgans();
             // Loading a save never awards extra time or resets an existing recovery curve.
             Refresh(true);
+        }
+
+        // Scan once after loading. Harvests, splits and spawns register later organs.
+        private void FindTaggedOrgans()
+        {
+            var found = new List<Thing>();
+            foreach (var map in Find.Maps)
+                ThingOwnerUtility.GetAllThingsRecursively(map, ThingRequest.ForGroup(ThingRequestGroup.HaulableEver),
+                    found, false, holder => true, true);
+            foreach (var caravan in Find.WorldObjects.Caravans)
+                found.AddRange(RimWorld.Planet.CaravanInventoryUtility.AllInventoryItems(caravan));
+            foreach (var thing in found)
+                if (thing.TryGetComp<CompPrisonerOrgan>()?.HarvestedLocallyFromPrisoner == true) TrackOrgan(thing);
         }
 
         public override void GameComponentTick()
@@ -122,8 +139,9 @@ namespace Deterrence
                 var settings = DeterrenceMod.Settings;
                 settings.Sanitize();
                 double day = Now;
+                trackedOrgans.RemoveWhere(thing => thing.Destroyed);
                 var samples = Find.Maps.Where(map => map.IsPlayerHome && !map.Disposed && !map.IsPocketMap)
-                    .Select(map => new MapDeterrenceSources(map)).ToArray();
+                    .Select(map => new MapDeterrenceSources(map, trackedOrgans)).ToArray();
                 globalLedger.BeginSample(day);
                 foreach (var sample in samples) globalLedger.ObserveMap(sample, day, settings);
                 globalLedger.FinishSample(day, settings);
@@ -233,11 +251,17 @@ namespace Deterrence
         {
             if (pawn == null || pawn.Faction == Faction.OfPlayer) return false;
             if (pawn.Faction != null && pawn.Faction.HostileTo(Faction.OfPlayer)) return true;
-            if (!pawn.RaceProps.Animal) return false;
+            // Only wild animals count through madness or scaria.
+            if (!pawn.RaceProps.Animal || pawn.Faction != null) return false;
             string mental = pawn.MentalStateDef?.defName;
             if (mental == "Manhunter" || mental == "ManhunterPermanent") return true;
             return pawn.health.hediffSet.hediffs.Any(h => h.def.defName == "Scaria");
         }
+
+        // Unrecorded bodies, such as those from before the mod was enabled, use status at death.
+        // Older humanlike bodies infer that status from current relations when first observed.
+        internal static bool EligibleRemains(Pawn pawn)
+            => pawn.RaceProps.Humanlike ? BurialRecord.ForCorpse(pawn).Status == BurialStatus.Hostile : Eligible(pawn);
 
         private bool RecordAct(Map map, string note, string sourceKey, Func<DeterrenceSettings, double> amountFor,
             out double globalAmount)

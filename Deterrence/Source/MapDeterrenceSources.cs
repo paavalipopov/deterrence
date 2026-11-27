@@ -14,16 +14,23 @@ namespace Deterrence
         private List<Thing> organs;
         private List<GameCondition> conditions;
         private int? hiveCount;
+        private readonly IEnumerable<Thing> trackedOrgans;
+        private static List<ThingDef> hiveDefs;
 
-        internal MapDeterrenceSources(Map map)
+        // Hive definitions, including modded subclasses, found once after defs load.
+        private static List<ThingDef> HiveDefs => hiveDefs ?? (hiveDefs = DefDatabase<ThingDef>.AllDefsListForReading
+            .Where(def => def.thingClass != null && typeof(Hive).IsAssignableFrom(def.thingClass)).ToList());
+
+        internal MapDeterrenceSources(Map map, IEnumerable<Thing> trackedOrgans)
         {
             Map = map;
             Population = map.mapPawns.FreeColonistsCount;
+            this.trackedOrgans = trackedOrgans;
         }
 
         internal List<Thing> Corpses => corpses ?? (corpses = Collect(ThingRequestGroup.Corpse));
-        internal List<Thing> Organs => organs ?? (organs = Collect(ThingRequestGroup.HaulableEver)
-            .Where(thing => DeterrenceGameComponent.IsKeptOrgan(thing, Map)).ToList());
+        internal List<Thing> Organs => organs ?? (organs = trackedOrgans
+            .Where(thing => DeterrenceGameComponent.IsKeptOrgan(thing, Map)).OrderBy(thing => thing.thingIDNumber).ToList());
 
         internal List<GameCondition> Conditions
         {
@@ -41,8 +48,8 @@ namespace Deterrence
             get
             {
                 if (!hiveCount.HasValue)
-                    hiveCount = Map.listerThings.AllThings.Count(thing => thing is Hive && thing.Faction != null
-                        && thing.Faction.HostileTo(Faction.OfPlayer));
+                    hiveCount = HiveDefs.Sum(def => Map.listerThings.ThingsOfDef(def).Count(thing => thing.Faction != null
+                        && thing.Faction.HostileTo(Faction.OfPlayer)));
                 return hiveCount.Value;
             }
         }

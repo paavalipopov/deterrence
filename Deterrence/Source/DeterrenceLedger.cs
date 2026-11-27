@@ -187,7 +187,7 @@ namespace Deterrence
                 if (corpse == null || corpse.Destroyed || corpse.InnerPawn == null || !corpse.SpawnedOrAnyParentSpawned) continue;
                 string key = "remains:" + corpse.InnerPawn.thingIDNumber;
                 bool known = byKey.TryGetValue(key, out var existing) && existing.CorpseId == corpse.thingIDNumber;
-                if (!known && !DeterrenceGameComponent.Eligible(corpse.InnerPawn)) continue;
+                if (!known && !DeterrenceGameComponent.EligibleRemains(corpse.InnerPawn)) continue;
                 var rule = settings.Rule(DeterrenceSettings.RemainsKey(corpse.InnerPawn), settings.CorpsePerCombatPower);
                 if (!rule.Enabled) continue;
                 double power = known ? existing.CombatPower : Math.Max(1, corpse.InnerPawn.kindDef.combatPower);

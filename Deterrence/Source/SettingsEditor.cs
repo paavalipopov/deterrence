@@ -124,6 +124,12 @@ namespace Deterrence
                     "The colony must be the only settlement on the island. Settlements from all factions count.");
             }
             if (settings.BiomeWealthScaling || settings.IslandWealthScaling) DrawTerrainPreview(listing, settings);
+            if (factionKey == null)
+            {
+                listing.Gap(6);
+                HelpUI.Checkbox(listing, "Apply to quests", ref global.AdjustQuests,
+                    "Quests and quest sites take threat points from the combined threat wealth of your colonies. Their rewards scale with those points. When on, the formula above also lowers quest threats and rewards. When off, quests use the game's own threat wealth.", true);
+            }
             listing.GapLine();
             SectionTitle(listing, "Settings guide");
             listing.Label("Remains: bodies and locally harvested prisoner organs kept at the colony.");

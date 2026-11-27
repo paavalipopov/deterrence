@@ -16,6 +16,7 @@ namespace Deterrence
             var global = new XElement("Global", WriteValues(FactionOverride.Capture(snapshot)));
             global.Add(new XElement("FactionOverridesEnabled", snapshot.FactionOverridesEnabled),
                 new XElement("ShowAdvancedColonyScaling", snapshot.ShowAdvancedColonyScaling),
+                new XElement("AdjustQuests", snapshot.AdjustQuests),
                 new XElement("CorpsePerCombatPower", snapshot.CorpsePerCombatPower),
                 new XElement("FalloutPerDay", snapshot.FalloutPerDay),
                 new XElement("TemperaturePerDay", snapshot.TemperaturePerDay));
@@ -40,6 +41,7 @@ namespace Deterrence
                 {
                     snapshot.FactionOverridesEnabled = ReadOptional(global, "FactionOverridesEnabled", 0) != 0;
                     snapshot.ShowAdvancedColonyScaling = ReadOptional(global, "ShowAdvancedColonyScaling", 0) != 0;
+                    snapshot.AdjustQuests = ReadOptional(global, "AdjustQuests", 1) != 0;
                     snapshot.CorpsePerCombatPower = ReadOptional(global, "CorpsePerCombatPower", snapshot.CorpsePerCombatPower);
                     snapshot.FalloutPerDay = ReadOptional(global, "FalloutPerDay", snapshot.FalloutPerDay);
                     snapshot.TemperaturePerDay = ReadOptional(global, "TemperaturePerDay", snapshot.TemperaturePerDay);

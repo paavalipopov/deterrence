@@ -13,6 +13,8 @@ namespace Deterrence
         public bool Corpses = true;
         public bool Conditions = true;
         public bool Reputation = true;
+        // Quests and quest sites read world threat wealth; this decides whether the formula applies there.
+        public bool AdjustQuests = true;
         public float RecoveryExponent = 0.5f;
         public bool FadeByHistory;
         public float FadeReferenceArea = 20000;
@@ -83,6 +85,7 @@ namespace Deterrence
             FalloutPerDay = copy.FalloutPerDay;
             TemperaturePerDay = copy.TemperaturePerDay;
             ShowAdvancedColonyScaling = copy.ShowAdvancedColonyScaling;
+            AdjustQuests = copy.AdjustQuests;
             FactionOverridesEnabled = copy.FactionOverridesEnabled;
             FactionOverrides = copy.FactionOverrides;
             Rules = copy.Rules;
@@ -208,6 +211,7 @@ namespace Deterrence
             Scribe_Values.Look(ref Corpses, "corpses", true);
             Scribe_Values.Look(ref Conditions, "conditions", true);
             Scribe_Values.Look(ref Reputation, "reputation", true);
+            Scribe_Values.Look(ref AdjustQuests, "adjustQuests", true);
             Scribe_Values.Look(ref FadeByHistory, "fadeByHistory");
             Scribe_Values.Look(ref FadeReferenceArea, "fadeReferenceArea", 20000);
             Scribe_Values.Look(ref RecoveryExponent, "recoveryExponent", 0.5f);

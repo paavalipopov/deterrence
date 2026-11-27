@@ -13,6 +13,7 @@ namespace Deterrence
         {
             if (!__instance.IsPlayerHome || __instance.IsPocketMap
                 || Current.Game == null || Find.Storyteller == null || Find.Storyteller.difficulty.fixedWealthMode) return;
+            if (WorldThreatWealthPatch.Depth > 0 && !DeterrenceMod.Settings.AdjustQuests) return;
             var ledger = Current.Game.GetComponent<DeterrenceGameComponent>();
             var profile = FactionRaidPoints.ProfileForEvaluation(__instance);
             var settings = profile?.Settings ?? DeterrenceMod.Settings;
@@ -23,6 +24,21 @@ namespace Deterrence
             __result = (float)SourceMath.AdjustedThreatWealth(gameThreatWealth,
                 profile?.Ledger.CreditFor(__instance) ?? ledger?.CreditFor(__instance) ?? 0, settings.Enabled, factor,
                 IslandGeography.FactorFor(__instance, settings));
+        }
+    }
+
+    // Quests and quest sites size their threats and rewards from the combined wealth of all colony maps.
+    [HarmonyPatch(typeof(RimWorld.Planet.World), nameof(RimWorld.Planet.World.PlayerWealthForStoryteller), MethodType.Getter)]
+    public static class WorldThreatWealthPatch
+    {
+        internal static int Depth;
+
+        public static void Prefix() => Depth++;
+
+        public static Exception Finalizer(Exception __exception)
+        {
+            Depth--;
+            return __exception;
         }
     }
 
@@ -84,6 +100,7 @@ namespace Deterrence
             {
                 var provenance = __state.HarvestedOrgan?.TryGetComp<CompPrisonerOrgan>();
                 if (provenance != null) provenance.HarvestedLocallyFromPrisoner = true;
+                ledger?.TrackOrgan(__state.HarvestedOrgan);
             }
             if (rule != null) ledger?.RegisterSurgery(__state.Victim, __state.Map, rule);
             if (rule == "bump:organ") ledger?.Refresh();
