@@ -1,8 +1,22 @@
 param(
-    [string]$GameRoot = 'C:\Program Files (x86)\Steam\steamapps\common\RimWorld',
-    [string]$HarmonyPath = (Join-Path $GameRoot '..\..\workshop\content\294100\2009463077\1.6\Assemblies\0Harmony.dll')
+    [string]$GameRoot,
+    [string]$HarmonyPath
 )
 $ErrorActionPreference = 'Stop'
+
+# Use the test-bed game beside the checkout when present, otherwise the Steam install.
+if (!$GameRoot) {
+    $testBed = Join-Path $PSScriptRoot '..\..\game'
+    $GameRoot = if (Test-Path -LiteralPath (Join-Path $testBed 'RimWorldWin64.exe')) { (Resolve-Path -LiteralPath $testBed).Path }
+        else { 'C:\Program Files (x86)\Steam\steamapps\common\RimWorld' }
+}
+
+# Find Harmony in the Workshop folder or among the game's local mods.
+if (!$HarmonyPath) {
+    $candidates = @((Join-Path $GameRoot '..\..\workshop\content\294100\2009463077\1.6\Assemblies\0Harmony.dll'),
+        (Join-Path $GameRoot 'Mods\2009463077\1.6\Assemblies\0Harmony.dll'))
+    $HarmonyPath = @($candidates | Where-Object { Test-Path -LiteralPath $_ }) + $candidates | Select-Object -First 1
+}
 $managed = Join-Path $GameRoot 'RimWorldWin64_Data\Managed'
 if (!(Test-Path -LiteralPath (Join-Path $managed 'Assembly-CSharp.dll'))) { throw 'RimWorld managed assemblies not found. Supply -GameRoot.' }
 if (!(Test-Path -LiteralPath $HarmonyPath)) { throw 'Harmony not found. Supply -HarmonyPath to the installed 0Harmony.dll.' }

@@ -1,9 +1,14 @@
 $ErrorActionPreference = 'Stop'
-$managed = 'C:\Program Files (x86)\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed'
+
+# Use the test-bed game beside the checkout when present, otherwise the Steam install.
+$testBed = Join-Path $PSScriptRoot '..\..\..\game'
+$gameRoot = if (Test-Path -LiteralPath (Join-Path $testBed 'RimWorldWin64.exe')) { (Resolve-Path -LiteralPath $testBed).Path }
+    else { 'C:\Program Files (x86)\Steam\steamapps\common\RimWorld' }
+$managed = Join-Path $gameRoot 'RimWorldWin64_Data\Managed'
 [AppDomain]::CurrentDomain.add_AssemblyResolve({ param($s,$e)
-    $p = Join-Path 'C:\Program Files (x86)\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed' (($e.Name.Split(',')[0])+'.dll')
+    $p = Join-Path $managed (($e.Name.Split(',')[0])+'.dll')
     if (Test-Path -LiteralPath $p) { [Reflection.Assembly]::LoadFrom($p) }
-})
+}.GetNewClosure())
 $assembly = [Reflection.Assembly]::LoadFrom((Join-Path $managed 'Assembly-CSharp.dll'))
 $flags = [Reflection.BindingFlags]'Public,NonPublic,Instance,Static,DeclaredOnly'
 foreach ($name in $args) {

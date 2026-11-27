@@ -1,5 +1,8 @@
 param([Parameter(Mandatory)][string]$TestGame,[Parameter(Mandatory)][string]$Profile,[string]$AdaptiveStorageMod,[switch]$Ideology,[string]$LegacySave,[string]$HarmonyPath = (Join-Path $TestGame 'Mods\Harmony\1.6\Assemblies\0Harmony.dll'))
 $ErrorActionPreference='Stop'
+# Fall back to Harmony under its Workshop ID, as packed for the test bed.
+$workshopHarmony=Join-Path $TestGame 'Mods\2009463077\1.6\Assemblies\0Harmony.dll'
+if (!(Test-Path -LiteralPath $HarmonyPath) -and (Test-Path -LiteralPath $workshopHarmony)) {$HarmonyPath=$workshopHarmony}
 $project=(Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 $testBin=Join-Path $TestGame 'Mods\DeterrenceStorageTest'
 $about=Join-Path $testBin 'About'
