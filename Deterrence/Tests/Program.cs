@@ -349,7 +349,7 @@ internal static class Program
         Check("menu section order follows the description", () =>
         {
             string actual = string.Join(",", Enum.GetNames<SettingsSection>());
-            Require(actual == "Formula,Remains,Reputation,Hazards,Curves,Summary,Options,Presets", "Documentation/menu order mismatch");
+            Require(actual == "Formula,Remains,Reputation,Hazards,Options,Curves,Summary,Presets", "Documentation/menu order mismatch");
         });
         Check("illness migration removes active and recovering legacy sources only", () =>
         {

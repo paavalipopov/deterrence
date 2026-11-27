@@ -100,7 +100,7 @@ Illness, solar flares, eclipses, psychic drones, volcanic winter, poor soil, and
 
 ## Tune the curves
 
-Settings follow **Formula, Remains, Reputation, Hazards, Curves, Summary, Options, Presets**. **Options** starts with **Colony size scaling**, **Faction overrides**, and **Apply to quests**. The bottom of Formula has **Open meters**. Colony size scaling reveals sample colonist inputs and additional Summary columns. This display preference applies to Global and every faction. Saved gameplay scaling applies while its controls are hidden.
+Settings follow **Formula, Remains, Reputation, Hazards, Options, Curves, Summary, Presets**. **Options** starts with **Colony size scaling**, **Faction overrides**, and **Apply to quests**. The bottom of Formula has **Open meters**. Colony size scaling reveals sample colonist inputs and additional Summary columns. This display preference applies to Global and every faction. Saved gameplay scaling applies while its controls are hidden.
 
 **Curves** puts the live plot beside scrollable growth and fade controls on wide windows. On narrow windows the plot sits above them. The preview offers Hazards, Reputation, and Combined views. You can set when a hive appears and when the cluster is cleared. The preview uses midpoint reproduction times at standard speed, with slower growth as hives crowd together. **By total exposure** slows hazards as raw exposure accumulates. **By daily rate** gives stronger hazards a longer slowdown time, calibrated at 2,000 points/day. Both use one shape slider: 0 for linear growth, 0.5 for square root, and 1 for logarithmic growth.
 
