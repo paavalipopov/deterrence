@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+- Added **Apply to quests** under Formula. When it is off, quests and quest sites size their threats and rewards from the game's own threat wealth.
+- Bodies recorded before the mod was enabled now count by their status at death. Older bodies infer that status from faction relations when first seen.
+- Maddened or scaria animals count only when they are wild.
+- The hourly refresh no longer scans every item for prisoner organs or every thing for hives. The smoothed-surface scan uses floor values computed once.
+- Each patch class is applied separately, so one missing game method no longer disables the rest.
+
 ## 0.13.1
 
 - The buildup line on Curves now shows the long-run linear, power-law or logarithmic trend for the selected growth shape.

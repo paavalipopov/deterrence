@@ -18,7 +18,7 @@ Adjusted threat wealth = max(0, Game threat wealth - Deterrence) x biome factor 
 
 Island detection follows connected land on the world map. It caches water-enclosed landmasses up to 350 tiles. The user limit defaults to 10 and can be changed independently for each faction. With Require sole settlement enabled, the current settlement list is checked against the cached tiles. An additional settlement from any faction disqualifies the island. World edges leave the factor at 1.
 
-Misc adjusts Game threat wealth before the formula, independently of its switches. Smoothed surface multiplier defaults to 1 (vanilla); 0 removes their counted contribution. It applies to smoothed floors and player-owned smoothed walls, including child pocket-map wealth, using vanilla's half-value building weighting. Asset prices/economic wealth are unchanged. Surface scans run hourly or on Apply only for non-default settings; no surface balance accumulates or fades.
+Misc adjusts Game threat wealth before the formula, independently of its switches. Smoothed surface multiplier defaults to 0, which removes their counted contribution; 1 is vanilla. It applies to smoothed floors and player-owned smoothed walls, including child pocket-map wealth, using vanilla's half-value building weighting. Asset prices/economic wealth are unchanged. Surface scans run hourly or on Apply while the multiplier is below 1, using floor values computed once; no surface balance accumulates or fades.
 
 ## Interaction decisions
 
