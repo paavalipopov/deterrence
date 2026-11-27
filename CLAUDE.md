@@ -41,15 +41,16 @@ Run these from `C:\RimTest\repo\Deterrence`. `Build.ps1` and `Tools\Inspect-Api.
     - Built-in Smart preset: waster pirates ignore pollution and toxic hazards, insects ignore remains and reputation, mechanoids ignore hazards.
     - Faction profiles also size infestations (Insect) and mech clusters and crashed ship parts (Mechanoid).
     - Remains pass the total of kept bodies through the hazard growth curve. A removed body fades its marginal contribution.
-    - Turn away arrivals: traders, visitors, travelers and wanderers are skipped with chance (1 - r)^p, where r = Threat / Base.
-    - Raid skip: human enemy raids are called off with chance s x (1 - r)^p, using the raiding faction's r.
-    - Raiders retreat after fewer losses as Reputation approaches the reference balance.
-    - A raiding faction's own dead can weigh more in Remains.
-    - Test-bed support in `Build.ps1` and `Tools`, and `Assemblies\Deterrence.dll` rebuilt from this code.
+    - Options define r = Threat / Base per arriving faction (profile plus own-dead weight w). Wanderers use the colony's r.
+    - Arrival frequency: rate = vanilla x (1 - s (1 - r)^p), with s for raids and s for traders and visitors, and a shared p.
+    - Raider retreat: retreat point = L x (1 - s (1 - r)^p), where L is the faction's usual 40-70%.
+    - Test-bed support in `Build.ps1` and `Tools`.
+- `Assemblies\Deterrence.dll` predates the Options tab, the remains tooltip, arrival frequency and raider retreat. Rebuild before testing.
 - Not yet verified: `Test.ps1`, `Tools\Test-Integration.ps1`, the headless storage test, and the in-game checks below.
 - In-game checks:
     - Load the Smart preset, then spawn an infestation and a waster pirate raid in Dev mode. Their points should differ from Global.
-    - With Dev mode on, the log reports each skipped raid and arrival.
+    - With Dev mode on and arrival frequency enabled, the log reports each skipped raid and arrival.
+    - With raider retreat enabled and heavy deterrence, a raid should flee after fewer losses than usual.
     - Harvest a prisoner organ, save and reload, and send it out and back with a caravan. It should keep counting.
     - The surface discount should match the value before the precomputed floor table.
 - Open work:
@@ -61,6 +62,7 @@ Run these from `C:\RimTest\repo\Deterrence`. `Build.ps1` and `Tools\Inspect-Api.
 
 ## Game facts checked in 1.6.4871
 
+- Trader caravans, visitor groups and traveler groups pick their faction in `IncidentWorker_NeutralGroup.TryResolveParms`. WandererJoin and WandererJoinAbasia have no faction.
 - Raid retreat: `Lord.SetJob` adds `Trigger_FractionPawnsLost` with the faction's `attackersDownPercentageRangeForAutoFlee` (0.4-0.7 by default). Factions with `autoFlee` false never retreat.
 - Raid build order in `IncidentWorker_Raid.TryGenerateRaidInfo`: points, faction, strategy, arrival mode, then `AdjustedRaidPoints`, which floors points at the strategy minimum x 1.05.
 - `Storyteller.TryFire(FiringIncident fi, bool queued)` runs every storyteller incident.
