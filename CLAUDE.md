@@ -19,7 +19,7 @@ RimWorld 1.6 mod that lowers the wealth the storyteller uses to size threats. Th
 
 ## Build and test
 
-Run these from `C:\RimTest\repo\Deterrence`. `Build.ps1` and `Tools\Inspect-Api.ps1` find `C:\RimTest\game` automatically, and Harmony in `game\Mods\2009463077`.
+Run these from `C:\RimTest\repo\Deterrence`. `Build.ps1` and `Tools\Inspect-Api.ps1` use the `RIMWORLD_GAME` environment variable when set, otherwise find `C:\RimTest\game` beside the checkout. Harmony comes from `game\Mods\2009463077`.
 
 - Build: `.\Build.ps1`
 - Unit tests: `.\Test.ps1`
@@ -31,6 +31,13 @@ Run these from `C:\RimTest\repo\Deterrence`. `Build.ps1` and `Tools\Inspect-Api.
     .\Tools\Test-CorpseStorageGame.ps1 -TestGame C:\RimTest\runs\game -Profile C:\RimTest\runs\profile-<name> -AdaptiveStorageMod C:\RimTest\game\Mods\3033901359
     ```
 - On the main PC the same scripts use the Steam install and the Workshop copy of Harmony.
+
+## Automatic build
+
+- `.github/workflows/build.yml` runs on a self-hosted GitHub Actions runner on the test machine, as the `rimtest` account, for every push to `next-version` that touches more than docs and textures. It can also be started by hand from the Actions tab.
+- It builds, runs `Test.ps1` and `Tools\Test-Integration.ps1`, and on success commits **Rebuild assembly** as `github-actions[bot]` through `Tools\Commit-Assembly.ps1`. A failed run commits nothing; its log is on the Actions tab.
+- So don't commit `Assemblies\Deterrence.dll` by hand. Pull after a push to get the rebuilt assembly.
+- Pull requests never run on the runner. The repository requires approval for every workflow from external contributors; keep it that way.
 
 ## Current state
 
@@ -45,8 +52,8 @@ Run these from `C:\RimTest\repo\Deterrence`. `Build.ps1` and `Tools\Inspect-Api.
     - Arrival frequency: rate = vanilla x (1 - s (1 - r)^p), with s for raids and s for traders and visitors, and a shared p.
     - Raider retreat: retreat point = L x (1 - s (1 - r)^p), where L is the faction's usual 40-70%.
     - Test-bed support in `Build.ps1` and `Tools`.
-- `Assemblies\Deterrence.dll` predates the Options tab, the remains tooltip, arrival frequency and raider retreat. Rebuild before testing.
-- Not yet verified: `Test.ps1`, `Tools\Test-Integration.ps1`, the headless storage test, and the in-game checks below.
+- `Assemblies\Deterrence.dll` is rebuilt by the Build workflow once the runner is registered. Until then it predates the Options tab, the remains tooltip, arrival frequency and raider retreat.
+- Not yet verified: the headless storage test and the in-game checks below. The Build workflow covers `Test.ps1` and `Tools\Test-Integration.ps1`.
 - In-game checks:
     - Load the Smart preset, then spawn an infestation and a waster pirate raid in Dev mode. Their points should differ from Global.
     - With Dev mode on and arrival frequency enabled, the log reports each skipped raid and arrival.
@@ -56,7 +63,6 @@ Run these from `C:\RimTest\repo\Deterrence`. `Build.ps1` and `Tools\Inspect-Api.
 - Open work:
     - Calibrate Remains and Hazards defaults on their shared growth curve.
     - Decide whether small threats (single maddened animals) should use unadjusted points.
-    - Regenerate `Deterrence-Guide.html` with `Tools\Build-Guide.py`.
     - When merging into `main`, trim this section.
 - The full design and its open questions are in `claude/next-version-plan.md`, in the Deterrence project on claude.ai.
 

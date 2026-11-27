@@ -1,0 +1,48 @@
+# Builds and tests every push to next-version on the RimTest PC, then commits the rebuilt assembly.
+# It runs only for pushes by people with write access, or a manual run. Pull requests never reach this runner.
+name: Build
+
+on:
+  push:
+    branches: [next-version]
+    paths-ignore:
+      - '**.md'
+      - '**.html'
+      - 'Workshop/**'
+      - 'Fonts/**'
+      - 'Deterrence/Textures/**'
+      - 'Deterrence/Assemblies/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+# Queue runs instead of building two commits at once.
+concurrency:
+  group: build-next-version
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: github.repository == 'paavalipopov/deterrence' && github.ref == 'refs/heads/next-version'
+    runs-on: [self-hosted, rimtest]
+    timeout-minutes: 30
+    env:
+      RIMWORLD_GAME: C:\RimTest\game
+    defaults:
+      run:
+        shell: cmd
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build
+        run: powershell -NoProfile -ExecutionPolicy Bypass -File Deterrence\Build.ps1
+
+      - name: Unit tests
+        run: powershell -NoProfile -ExecutionPolicy Bypass -File Deterrence\Test.ps1
+
+      - name: Integration tests
+        run: powershell -NoProfile -ExecutionPolicy Bypass -File Deterrence\Tools\Test-Integration.ps1
+
+      - name: Commit assembly
+        run: powershell -NoProfile -ExecutionPolicy Bypass -File Deterrence\Tools\Commit-Assembly.ps1
