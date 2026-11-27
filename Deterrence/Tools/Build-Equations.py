@@ -238,8 +238,55 @@ def terrain_and_colony():
     equation.save("ColonyFactor")
 
 
+def reduced(equation):
+    """Draw the shared reduction (1 − s (1 − r)^p)."""
+    equation.text("(1 − ")
+    equation.text("s", VARIABLE)
+    equation.text(" (1 − ")
+    equation.text("r", VARIABLE)
+    equation.text(")")
+    equation.text("p", POWER_VARIABLE, baseline=12)
+    equation.x += 2 * SCALE
+    equation.text(")")
+
+
+def options():
+    equation = Equation()
+    equation.text("r", VARIABLE)
+    equation.text(" = ")
+    equation.fraction("Threat", "Base")
+    equation.save("ThreatRatio")
+
+    equation = Equation()
+    equation.text("Rate = vanilla rate × ")
+    reduced(equation)
+    equation.save("ArrivalRate")
+
+    equation = Equation()
+    equation.text("Retreat point = ")
+    equation.text("L", VARIABLE)
+    equation.text(" × ")
+    reduced(equation)
+    equation.save("RetreatPoint")
+
+    equation = Equation()
+    equation.text("Counted remains = ")
+    equation.text("G", VARIABLE)
+    equation.text("(")
+    equation.text("B", VARIABLE)
+    equation.text(" + (")
+    equation.text("w", VARIABLE)
+    equation.text(" − 1) ")
+    equation.text("B", VARIABLE)
+    equation.text("F", POWER_VARIABLE, baseline=26)
+    equation.x += 2 * SCALE
+    equation.text(")")
+    equation.save("FactionMemory")
+
+
 if __name__ == "__main__":
     OUTPUT.mkdir(parents=True, exist_ok=True)
+    options()
     for option in (False, True):
         growth(option)
         fade(option)

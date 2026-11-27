@@ -56,9 +56,6 @@ namespace Deterrence
                 : ledger.CreditFor(map, faction.loadID, DeterrenceMod.Settings.OwnDeadWeight, settings.RemainsGrowth);
         }
 
-        internal double ReputationFor(Map map, Faction faction)
-            => (FactionSettingsFor(faction?.def?.defName)?.Ledger ?? globalLedger).ReputationFor(map);
-
         internal ResolvedFaction FactionSettingsFor(string factionKey)
         {
             if (!DeterrenceMod.Settings.FactionOverridesEnabled || string.IsNullOrEmpty(factionKey)) return null;

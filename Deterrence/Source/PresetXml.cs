@@ -17,10 +17,12 @@ namespace Deterrence
             global.Add(new XElement("FactionOverridesEnabled", snapshot.FactionOverridesEnabled),
                 new XElement("ShowAdvancedColonyScaling", snapshot.ShowAdvancedColonyScaling),
                 new XElement("AdjustQuests", snapshot.AdjustQuests),
-                new XElement("DeterArrivals", snapshot.DeterArrivals),
+                new XElement("ArrivalFrequency", snapshot.ArrivalFrequency),
                 new XElement("RaidSkipStrength", snapshot.RaidSkipStrength),
+                new XElement("VisitorSkipStrength", snapshot.VisitorSkipStrength),
                 new XElement("SkipExponent", snapshot.SkipExponent),
-                new XElement("RetreatFactor", snapshot.RetreatFactor),
+                new XElement("RaiderRetreat", snapshot.RaiderRetreat),
+                new XElement("RetreatStrength", snapshot.RetreatStrength),
                 new XElement("OwnDeadWeight", snapshot.OwnDeadWeight),
                 new XElement("CorpsePerCombatPower", snapshot.CorpsePerCombatPower),
                 new XElement("FalloutPerDay", snapshot.FalloutPerDay),
@@ -47,10 +49,12 @@ namespace Deterrence
                     snapshot.FactionOverridesEnabled = ReadOptional(global, "FactionOverridesEnabled", 0) != 0;
                     snapshot.ShowAdvancedColonyScaling = ReadOptional(global, "ShowAdvancedColonyScaling", 0) != 0;
                     snapshot.AdjustQuests = ReadOptional(global, "AdjustQuests", 1) != 0;
-                    snapshot.DeterArrivals = ReadOptional(global, "DeterArrivals", 0) != 0;
+                    snapshot.ArrivalFrequency = ReadOptional(global, "ArrivalFrequency", 0) != 0;
                     snapshot.RaidSkipStrength = ReadOptional(global, "RaidSkipStrength", snapshot.RaidSkipStrength);
+                    snapshot.VisitorSkipStrength = ReadOptional(global, "VisitorSkipStrength", snapshot.VisitorSkipStrength);
                     snapshot.SkipExponent = ReadOptional(global, "SkipExponent", snapshot.SkipExponent);
-                    snapshot.RetreatFactor = ReadOptional(global, "RetreatFactor", snapshot.RetreatFactor);
+                    snapshot.RaiderRetreat = ReadOptional(global, "RaiderRetreat", 0) != 0;
+                    snapshot.RetreatStrength = ReadOptional(global, "RetreatStrength", snapshot.RetreatStrength);
                     snapshot.OwnDeadWeight = ReadOptional(global, "OwnDeadWeight", snapshot.OwnDeadWeight);
                     snapshot.CorpsePerCombatPower = ReadOptional(global, "CorpsePerCombatPower", snapshot.CorpsePerCombatPower);
                     snapshot.FalloutPerDay = ReadOptional(global, "FalloutPerDay", snapshot.FalloutPerDay);

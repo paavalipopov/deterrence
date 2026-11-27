@@ -47,7 +47,7 @@ namespace Deterrence
         }
     }
 
-    // Hostile groups on a colony map retreat after fewer losses as the colony's reputation grows.
+    // Hostile groups on a colony map retreat after fewer losses as the ratio for their faction falls.
     [HarmonyPatch(typeof(Trigger_FractionPawnsLost), nameof(Trigger_FractionPawnsLost.ActivateOn))]
     public static class RetreatPatch
     {
@@ -55,14 +55,13 @@ namespace Deterrence
         {
             __state = float.NaN;
             var settings = DeterrenceMod.Settings;
-            if (settings.RetreatFactor >= 1 || signal.type != TriggerSignalType.PawnLost
+            if (!settings.RaiderRetreat || settings.RetreatStrength <= 0 || signal.type != TriggerSignalType.PawnLost
                 || lord?.faction == null || !lord.faction.HostileTo(Faction.OfPlayer)) return;
             var map = lord.Map;
-            var ledger = Current.Game?.GetComponent<DeterrenceGameComponent>();
-            if (map == null || !map.IsPlayerHome || ledger == null) return;
+            if (map == null || !map.IsPlayerHome || map.IsPocketMap || Current.Game == null) return;
             __state = ___fraction;
-            ___fraction = (float)SourceMath.RetreatFraction(___fraction, ledger.ReputationFor(map, lord.faction),
-                settings.RecoveryReference, settings.RetreatFactor);
+            ___fraction = (float)SourceMath.RetreatPoint(___fraction, FactionRaidPoints.RatioFor(map, lord.faction),
+                settings.RetreatStrength, settings.SkipExponent);
         }
 
         public static void Finalizer(ref float ___fraction, float __state)
@@ -71,25 +70,41 @@ namespace Deterrence
         }
     }
 
-    // Trader caravans, visitors, travelers and wanderers come less often to deterred colonies.
+    // Marks the incident the storyteller is firing, and skips wanderers, who have no faction.
     [HarmonyPatch(typeof(Storyteller), nameof(Storyteller.TryFire))]
     public static class ArrivalSkipPatch
     {
-        private static readonly System.Collections.Generic.HashSet<string> Arrivals = new System.Collections.Generic.HashSet<string>
-            { "TraderCaravanArrival", "VisitorGroup", "TravelerGroup", "WandererJoin", "WandererJoinAbasia" };
+        [ThreadStatic] internal static IncidentParms Firing;
+        private static readonly System.Collections.Generic.HashSet<string> Wanderers =
+            new System.Collections.Generic.HashSet<string> { "WandererJoin", "WandererJoinAbasia" };
 
-        public static bool Prefix(FiringIncident fi, ref bool __result)
+        public static bool Prefix(FiringIncident fi, ref bool __result, out IncidentParms __state)
         {
-            var settings = DeterrenceMod.Settings;
-            if (!settings.DeterArrivals || fi?.def == null || !Arrivals.Contains(fi.def.defName)
-                || !(fi.parms?.target is Map map) || !map.IsPlayerHome || map.IsPocketMap
-                || Find.Storyteller?.difficulty.fixedWealthMode != false) return true;
-            double chance = SourceMath.SkipChance(FactionRaidPoints.ThreatRatio(map, null, null), 1, settings.SkipExponent);
-            int seed = Gen.HashCombineInt(Find.TickManager.TicksGame, Gen.HashCombineInt(map.uniqueID, fi.def.shortHash));
-            if (!Rand.ChanceSeeded((float)chance, seed)) return true;
-            if (Prefs.DevMode) Log.Message("[Deterrence] Skipped " + fi.def.defName + " (" + chance.ToString("P0") + " chance).");
+            __state = Firing;
+            Firing = fi?.parms;
+            if (fi?.def == null || !Wanderers.Contains(fi.def.defName) || !(fi.parms?.target is Map map)
+                || !FactionRaidPoints.SkipArrival(map, null, DeterrenceMod.Settings.VisitorSkipStrength, fi.def.shortHash, fi.def.defName))
+                return true;
             __result = false;
             return false;
+        }
+
+        public static void Finalizer(IncidentParms __state) => Firing = __state;
+    }
+
+    // Traders, visitors and travelers choose their faction here, so their skip uses that faction's ratio.
+    [HarmonyPatch(typeof(IncidentWorker_NeutralGroup), "TryResolveParms")]
+    public static class NeutralArrivalSkipPatch
+    {
+        private static readonly System.Collections.Generic.HashSet<string> Arrivals =
+            new System.Collections.Generic.HashSet<string> { "TraderCaravanArrival", "VisitorGroup", "TravelerGroup" };
+
+        public static void Postfix(IncidentWorker_NeutralGroup __instance, IncidentParms parms, ref bool __result)
+        {
+            if (!__result || parms == null || ArrivalSkipPatch.Firing != parms || __instance.def == null
+                || !Arrivals.Contains(__instance.def.defName) || parms.faction == null || !(parms.target is Map map)) return;
+            if (FactionRaidPoints.SkipArrival(map, parms.faction, DeterrenceMod.Settings.VisitorSkipStrength,
+                __instance.def.shortHash, __instance.def.defName + " from " + parms.faction.Name)) __result = false;
         }
     }
 

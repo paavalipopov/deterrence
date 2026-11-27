@@ -100,13 +100,13 @@ namespace Deterrence
             => Math.Min(1, CreditMath.Positive(strength))
                 * Math.Pow(1 - Math.Max(0, Math.Min(1, ratio)), Math.Max(0.01, CreditMath.Positive(exponent, 2)));
 
-        // Raiders retreat after a smaller share of losses as reputation approaches the reference amount.
-        public static double RetreatFraction(double vanilla, double reputation, double reference, double factor)
-        {
-            double reach = Math.Min(1, CreditMath.Positive(reputation) / Math.Max(1, CreditMath.Positive(reference, 10000)));
-            double target = Math.Max(0, Math.Min(1, CreditMath.Positive(factor, 1)));
-            return CreditMath.Positive(vanilla) * (1 - (1 - target) * reach);
-        }
+        // Share of the vanilla rate that still happens: 1 at r = 1, and 1 - s at r = 0.
+        public static double RateFactor(double ratio, double strength, double exponent)
+            => 1 - SkipChance(ratio, strength, exponent);
+
+        // Raiders flee after a smaller share of losses as the ratio for their faction falls.
+        public static double RetreatPoint(double vanilla, double ratio, double strength, double exponent)
+            => CreditMath.Positive(vanilla) * RateFactor(ratio, strength, exponent);
 
         public static double BiomeMultiplier(double settlementWeight, double exponent, bool enabled)
         {

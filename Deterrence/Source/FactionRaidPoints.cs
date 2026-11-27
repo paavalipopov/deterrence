@@ -145,11 +145,28 @@ namespace Deterrence
             }
 
             // Human raiders think twice in proportion to the wealth deterred for their faction.
-            if (global.RaidSkipStrength <= 0 || parms.faction?.def?.humanlikeFaction != true) return true;
-            double chance = SourceMath.SkipChance(ThreatRatio(map, profile, remembering), global.RaidSkipStrength, global.SkipExponent);
-            if (!Rand.ChanceSeeded((float)chance, Gen.HashCombineInt(Find.TickManager.TicksGame, map.uniqueID))) return true;
-            if (Prefs.DevMode) Log.Message("[Deterrence] Skipped a raid by " + parms.faction.Name + " (" + chance.ToString("P0") + " chance).");
-            return false;
+            if (parms.faction?.def?.humanlikeFaction != true) return true;
+            return !SkipArrival(map, parms.faction, global.RaidSkipStrength, parms.faction.loadID, "a raid by " + parms.faction.Name);
+        }
+
+        // Threat / Base as seen by a faction: its profile, and its own dead when that weighting is on.
+        internal static double RatioFor(Map map, Faction faction)
+        {
+            var profile = Current.Game?.GetComponent<DeterrenceGameComponent>()?.FactionSettingsFor(faction?.def?.defName);
+            return ThreatRatio(map, profile, DeterrenceMod.Settings.OwnDeadWeight > 1 ? faction : null);
+        }
+
+        // Roll whether a deterred arrival is called off. The seed repeats the roll after a reload.
+        internal static bool SkipArrival(Map map, Faction faction, float strength, int salt, string label)
+        {
+            var settings = DeterrenceMod.Settings;
+            if (!settings.ArrivalFrequency || strength <= 0 || map == null || !map.IsPlayerHome || map.IsPocketMap
+                || Find.Storyteller?.difficulty.fixedWealthMode != false) return false;
+            double chance = SourceMath.SkipChance(RatioFor(map, faction), strength, settings.SkipExponent);
+            int seed = Gen.HashCombineInt(Find.TickManager.TicksGame, Gen.HashCombineInt(map.uniqueID, salt));
+            if (!Rand.ChanceSeeded((float)chance, seed)) return false;
+            if (Prefs.DevMode) Log.Message("[Deterrence] Skipped " + label + " (" + chance.ToString("P0") + " chance).");
+            return true;
         }
 
         // Returns the original points when they were changed, otherwise NaN.

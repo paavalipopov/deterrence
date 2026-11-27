@@ -40,10 +40,6 @@ namespace Deterrence
             return Math.Max(0, credit - growth.Stock(raw) + growth.Stock(raw + (ownWeight - 1) * own));
         }
 
-        internal double ReputationFor(Map map)
-            => map != null && byKey.TryGetValue(RuleGrouping.ReputationMeter(map.uniqueID), out var entry)
-                ? CreditMath.Positive(entry.Balance) : 0;
-
         public void ExposeData()
         {
             Scribe_Values.Look(ref ProfileId, "profile");

@@ -645,7 +645,7 @@ internal static class Program
             var growth = new HazardGrowth(false, 20000, 10, 0.5);
             Require(growth.Stock(40000) < 2 * growth.Stock(20000), "Remains stock should grow with diminishing returns");
         });
-        Check("threat ratio, skip chance and retreat point stay within their ranges", () =>
+        Check("threat ratio, skip chance, arrival rate and retreat point stay within their ranges", () =>
         {
             Equal(0.5, SourceMath.ThreatRatio(5000, 10000));
             Equal(1, SourceMath.ThreatRatio(5000, 0));
@@ -656,10 +656,13 @@ internal static class Program
             Equal(0, SourceMath.SkipChance(1, 1, 2));
             Equal(1, SourceMath.SkipChance(0, 1, 2));
             Equal(0, SourceMath.SkipChance(0.2, 0, 2));
-            Equal(0.5, SourceMath.RetreatFraction(0.5, 0, 10000, 0.6));
-            Equal(0.4, SourceMath.RetreatFraction(0.5, 5000, 10000, 0.6), 0.000001);
-            Equal(0.3, SourceMath.RetreatFraction(0.5, 20000, 10000, 0.6), 0.000001);
-            Equal(0.5, SourceMath.RetreatFraction(0.5, 20000, 10000, 1));
+            Equal(0.75, SourceMath.RateFactor(0.5, 1, 2));
+            Equal(1, SourceMath.RateFactor(1, 1, 2));
+            Equal(0.5, SourceMath.RateFactor(0, 0.5, 2));
+            Equal(1, SourceMath.RateFactor(0.2, 0, 2));
+            Equal(0.375, SourceMath.RetreatPoint(0.5, 0.5, 0.5, 1));
+            Equal(0.5, SourceMath.RetreatPoint(0.5, 1, 1, 2));
+            Equal(0, SourceMath.RetreatPoint(0.5, 0, 1, 2));
         });
         Console.WriteLine("All " + passed + " checks passed.");
     }

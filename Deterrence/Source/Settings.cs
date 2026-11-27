@@ -15,11 +15,13 @@ namespace Deterrence
         public bool Reputation = true;
         // Quests and quest sites read world threat wealth; this decides whether the formula applies there.
         public bool AdjustQuests = true;
-        // Options beyond threat size. All are global and off at their defaults.
-        public bool DeterArrivals;
-        public float RaidSkipStrength;
+        // Arrival frequency and raider retreat. Both are global and off until enabled.
+        public bool ArrivalFrequency;
+        public float RaidSkipStrength = 0.5f;
+        public float VisitorSkipStrength = 0.5f;
         public float SkipExponent = 2;
-        public float RetreatFactor = 1;
+        public bool RaiderRetreat;
+        public float RetreatStrength = 0.5f;
         public float OwnDeadWeight = 1;
         public float RecoveryExponent = 0.5f;
         public bool FadeByHistory;
@@ -94,10 +96,12 @@ namespace Deterrence
             TemperaturePerDay = copy.TemperaturePerDay;
             ShowAdvancedColonyScaling = copy.ShowAdvancedColonyScaling;
             AdjustQuests = copy.AdjustQuests;
-            DeterArrivals = copy.DeterArrivals;
+            ArrivalFrequency = copy.ArrivalFrequency;
             RaidSkipStrength = copy.RaidSkipStrength;
+            VisitorSkipStrength = copy.VisitorSkipStrength;
             SkipExponent = copy.SkipExponent;
-            RetreatFactor = copy.RetreatFactor;
+            RaiderRetreat = copy.RaiderRetreat;
+            RetreatStrength = copy.RetreatStrength;
             OwnDeadWeight = copy.OwnDeadWeight;
             FactionOverridesEnabled = copy.FactionOverridesEnabled;
             FactionOverrides = copy.FactionOverrides;
@@ -225,10 +229,12 @@ namespace Deterrence
             Scribe_Values.Look(ref Conditions, "conditions", true);
             Scribe_Values.Look(ref Reputation, "reputation", true);
             Scribe_Values.Look(ref AdjustQuests, "adjustQuests", true);
-            Scribe_Values.Look(ref DeterArrivals, "deterArrivals");
-            Scribe_Values.Look(ref RaidSkipStrength, "raidSkipStrength");
+            Scribe_Values.Look(ref ArrivalFrequency, "arrivalFrequency");
+            Scribe_Values.Look(ref RaidSkipStrength, "raidSkipStrength", 0.5f);
+            Scribe_Values.Look(ref VisitorSkipStrength, "visitorSkipStrength", 0.5f);
             Scribe_Values.Look(ref SkipExponent, "skipExponent", 2);
-            Scribe_Values.Look(ref RetreatFactor, "retreatFactor", 1);
+            Scribe_Values.Look(ref RaiderRetreat, "raiderRetreat");
+            Scribe_Values.Look(ref RetreatStrength, "retreatStrength", 0.5f);
             Scribe_Values.Look(ref OwnDeadWeight, "ownDeadWeight", 1);
             Scribe_Values.Look(ref FadeByHistory, "fadeByHistory");
             Scribe_Values.Look(ref FadeReferenceArea, "fadeReferenceArea", 20000);
@@ -321,8 +327,9 @@ namespace Deterrence
             SlowdownDays = Mathf.Clamp((float)CreditMath.Positive(SlowdownDays, 10), 0.1f, 120);
             FadeReferenceArea = Mathf.Clamp((float)CreditMath.Positive(FadeReferenceArea, 20000), 100, 1000000);
             RaidSkipStrength = Mathf.Clamp01((float)CreditMath.Positive(RaidSkipStrength));
+            VisitorSkipStrength = Mathf.Clamp01((float)CreditMath.Positive(VisitorSkipStrength));
             SkipExponent = Mathf.Clamp((float)CreditMath.Positive(SkipExponent, 2), 0.25f, 4);
-            RetreatFactor = Mathf.Clamp((float)CreditMath.Positive(RetreatFactor, 1), 0.1f, 1);
+            RetreatStrength = Mathf.Clamp01((float)CreditMath.Positive(RetreatStrength));
             OwnDeadWeight = Mathf.Clamp((float)CreditMath.Positive(OwnDeadWeight, 1), 1, 5);
             EnsureBuiltins();
             foreach (var rule in Rules)

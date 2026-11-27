@@ -62,14 +62,15 @@ namespace Deterrence
                 case "Maximum island tiles": help = "A water-enclosed landmass can qualify if it has at most this many world map tiles. The default is 180."; break;
                 case "Heat threshold (C)": help = "Outdoor temperature above this value creates heat exposure. Every additional 10 C is one unit. Below the threshold there is no new heat gain."; break;
                 case "Cold threshold (C)": help = "Outdoor temperature below this value creates cold exposure. Every additional 10 C is one unit. Above the threshold there is no new cold gain."; break;
-                case "Raid skip strength": help = "Human enemy raids are called off with chance s × (1 − r)^p, using r for the raiding faction's profile. Quest raids are unaffected. At 0 raids keep their usual timing."; break;
-                case "Skip exponent": help = "Shapes both skip chances. Above 1, mild deterrence barely changes how often outsiders come. At 1 the chance is proportional to 1 − r."; break;
-                case "Retreat point at reference reputation": help = "Raiders normally retreat after losing 40–70% of their group, depending on the faction. At the reference balance on the Curves tab, they retreat at this share of their usual point. With no reputation they keep the usual point. At 100% nothing changes."; break;
-                case "Weight of a faction's own dead": help = "When a faction raids, the remains of its own members count this many times before the remains curve. At 1 every body counts the same."; break;
+                case "Raids": help = "The largest share of human enemy raids turned away, reached at r = 0. Uses r for the raiding faction. Quest raids are unaffected."; break;
+                case "Traders and visitors": help = "The largest share of trader caravans, visitor and traveler groups, and wanderers turned away, reached at r = 0. Each uses r for its faction; wanderers use the colony's r."; break;
+                case "Shape": help = "Shared by arrival frequency and raider retreat. At 1 the effect grows in proportion to 1 − r. Above 1, mild deterrence barely matters and strong deterrence matters most."; break;
+                case "Retreat": help = "The largest cut to the losses a raid accepts before fleeing, reached at r = 0. At 50%, a raid that would flee at 60% losses flees at 30% when r = 0."; break;
+                case "Own dead weight": help = "How many times a faction counts the remains of its own members before the remains curve. At 1 every body counts the same."; break;
                 default: help = "Changes this source's contribution."; break;
             }
             string display = fraction ? value.ToString("P0")
-                : label == "Growth shape" || label == "Duration exponent" || label == "Slowdown days at 2,000/day" || label == "Skip exponent"
+                : label == "Growth shape" || label == "Duration exponent" || label == "Slowdown days at 2,000/day" || label == "Shape"
                     ? value.ToString("0.##") : label == "Biome strength" || label == "Island multiplier" || label == "Smoothed surface wealth" ? value.ToString("0.00") : F(value);
             string caption = symbol == null ? label : label + " (" + symbol + ")";
             HelpUI.Label(listing, caption + ": " + display, help);
