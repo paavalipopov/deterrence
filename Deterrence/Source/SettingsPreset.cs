@@ -19,17 +19,17 @@ namespace Deterrence
 
         internal static SettingsPreset CreateDefaults()
         {
-            var preset = new SettingsPreset { Name = "Defaults", IsBuiltIn = true, builtInId = "@defaults",
-                Description = "Restores the mod defaults for your installed content and clears faction overrides." };
+            var preset = new SettingsPreset { Name = "Flat", IsBuiltIn = true, builtInId = "@defaults",
+                Description = "Restores the mod defaults for your installed content and clears faction overrides, so every faction fears the same things." };
             preset.snapshot.DiscoverRules();
             return preset;
         }
 
-        // Defaults plus faction profiles for outsiders that fear different things.
+        // Flat plus faction profiles for outsiders that fear different things.
         internal static SettingsPreset CreateSmart()
         {
             var preset = new SettingsPreset { Name = "Smart", IsBuiltIn = true, builtInId = "@smart",
-                Description = "Defaults, plus faction profiles. Waster pirates ignore pollution and toxic hazards. "
+                Description = "Flat, plus faction profiles. Waster pirates ignore pollution and toxic hazards. "
                     + "Insects ignore remains and reputation but still avoid extreme temperatures. Mechanoids ignore hazards." };
             var snapshot = preset.snapshot;
             snapshot.DiscoverRules();

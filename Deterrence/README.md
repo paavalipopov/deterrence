@@ -52,7 +52,7 @@ Existing settings and presets keep their exposure scale, growth shape and refere
 
 ## Presets
 
-**Defaults (built-in)** restores the current factory settings, including source weights, and clears faction overrides. Save current settings under a new name to keep a customized copy.
+**Flat (built-in)** restores the current factory settings, including source weights, and clears faction overrides. Save current settings under a new name to keep a customized copy.
 
 **Save current settings** takes a named snapshot of Global settings and faction overrides. Select a saved preset on the right to see its formula and description, load it, rename it, or delete it. Colony balances and history stay with the current save.
 

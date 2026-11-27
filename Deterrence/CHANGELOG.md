@@ -3,6 +3,7 @@
 ## 0.14.0
 
 - Misc is now **Options**, placed after Hazards. It also holds **Colony size scaling** and **Faction overrides**, moved from Formula, and the new quest, arrival and raider settings.
+- The built-in Defaults preset is now **Flat**.
 - The mod list and settings show the shield icon from the bottom bar.
 - Added **Apply to quests** under Options. When it is off, quests and quest sites size their threats and rewards from the game's own threat wealth.
 - Added the built-in **Smart** preset. Waster pirates ignore pollution and toxic hazards, insects ignore remains and reputation, and mechanoids ignore hazards.
