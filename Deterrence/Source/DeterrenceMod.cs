@@ -1,3 +1,4 @@
+using System;
 using HarmonyLib;
 using UnityEngine;
 using Verse;
@@ -13,11 +14,21 @@ namespace Deterrence
         public DeterrenceMod(ModContentPack content) : base(content)
         {
             EquationDirectory = System.IO.Path.Combine(content.RootDir, "Textures/UI/Deterrence/Equations");
-            new Harmony("pavel.deterrence").PatchAll();
+            PatchEachClass(new Harmony("pavel.deterrence"));
             LegacyIdentity.ImportSettings(content.FolderName);
             Settings = GetSettings<DeterrenceSettings>();
             Settings.Sanitize();
             Log.Message("[Deterrence] Loaded 0.13.1.");
+        }
+
+        // Patch class by class, so one missing game method leaves the other patches active.
+        private static void PatchEachClass(Harmony harmony)
+        {
+            foreach (var type in AccessTools.GetTypesFromAssembly(typeof(DeterrenceMod).Assembly))
+            {
+                try { harmony.CreateClassProcessor(type).Patch(); }
+                catch (Exception error) { Log.Error("[Deterrence] Could not apply patches in " + type.FullName + ": " + error); }
+            }
         }
 
         public override string SettingsCategory() => "Deterrence";
