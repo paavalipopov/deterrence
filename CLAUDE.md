@@ -52,8 +52,8 @@ Run these from `C:\RimTest\repo\Deterrence`. `Build.ps1` and `Tools\Inspect-Api.
     - Arrival frequency: rate = vanilla x (1 - s (1 - r)^p), with s for raids and s for traders and visitors, and a shared p.
     - Raider retreat: retreat point = L x (1 - s (1 - r)^p), where L is the faction's usual 40-70%.
     - Test-bed support in `Build.ps1` and `Tools`.
-- `Assemblies\Deterrence.dll` is rebuilt by the Build workflow once the runner is registered. Until then it predates the Options tab, the remains tooltip, arrival frequency and raider retreat.
-- Not yet verified: the headless storage test and the in-game checks below. The Build workflow covers `Test.ps1` and `Tools\Test-Integration.ps1`.
+- `Assemblies\Deterrence.dll` is current, and the Build workflow passes the unit and integration tests.
+- Not yet verified: the headless storage test and the in-game checks below.
 - In-game checks:
     - Load the Smart preset, then spawn an infestation and a waster pirate raid in Dev mode. Their points should differ from Global.
     - With Dev mode on and arrival frequency enabled, the log reports each skipped raid and arrival.
