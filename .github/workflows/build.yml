@@ -41,8 +41,9 @@ jobs:
       - name: Unit tests
         run: powershell -NoProfile -ExecutionPolicy Bypass -File Deterrence\Test.ps1
 
+      # PowerShell 7: Windows PowerShell's .NET Framework can't resolve the game's Queue<T>.
       - name: Integration tests
-        run: powershell -NoProfile -ExecutionPolicy Bypass -File Deterrence\Tools\Test-Integration.ps1
+        run: pwsh -NoProfile -ExecutionPolicy Bypass -File Deterrence\Tools\Test-Integration.ps1
 
       - name: Commit assembly
         run: powershell -NoProfile -ExecutionPolicy Bypass -File Deterrence\Tools\Commit-Assembly.ps1

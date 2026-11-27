@@ -23,7 +23,7 @@ Run these from `C:\RimTest\repo\Deterrence`. `Build.ps1` and `Tools\Inspect-Api.
 
 - Build: `.\Build.ps1`
 - Unit tests: `.\Test.ps1`
-- Integration tests against the game assemblies: `.\Tools\Test-Integration.ps1`
+- Integration tests against the game assemblies, in PowerShell 7: `pwsh -ExecutionPolicy Bypass -File .\Tools\Test-Integration.ps1`. Windows PowerShell 5.1 can't load the game's `Queue<T>`.
 - Headless in-game storage test. It installs test mods into the game it is given, so use a fresh copy and a new profile folder for each run:
     ```
     robocopy C:\RimTest\game C:\RimTest\runs\game /E /XJ /R:1 /W:1 /NFL /NDL /NJH /NJS /NP
