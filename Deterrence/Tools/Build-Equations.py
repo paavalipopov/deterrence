@@ -1,13 +1,13 @@
 """Render settings and meter equations with a common canvas and baseline."""
 
-import os
 from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
 
 
 OUTPUT = Path(__file__).resolve().parents[1] / "Textures/UI/Deterrence/Equations"
-FONTS = Path(os.environ["WINDIR"]) / "Fonts"
+# Open fonts kept outside the mod folder, so every platform renders the same equations.
+FONTS = Path(__file__).resolve().parents[2] / "Fonts"
 SCALE = 8
 OUTPUT_SCALE = 4  # Neutral coverage master; the game integrates it at the final pixel size.
 HEIGHT = 32
@@ -15,11 +15,12 @@ BASELINE = 22
 
 
 def font(size, italic=False):
-    return ImageFont.truetype(FONTS / ("segoeuii.ttf" if italic else "segoeui.ttf"), size * SCALE)
+    return ImageFont.truetype(FONTS / ("OpenSans-Italic[wdth,wght].ttf" if italic else "OpenSans[wdth,wght].ttf"), size * SCALE)
 
 
 NORMAL = font(15)
-SYMBOL = ImageFont.truetype(FONTS / "seguisym.ttf", 15 * SCALE)
+# Open Sans lacks the proportionality sign.
+SYMBOL = ImageFont.truetype(FONTS / "DejaVuSans.ttf", 15 * SCALE)
 VARIABLE = font(15, italic=True)
 FRACTION = font(12, italic=True)
 POWER = font(10)
