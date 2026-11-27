@@ -95,7 +95,7 @@ if ($stockRule.BaseAmount -ne 5 -or $stockRule.PopulationExponent -ne 0) { throw
 $thingDefType = $assembly.GetType('Verse.ThingDef')
 $thingType = $assembly.GetType('Verse.ThingWithComps')
 # Constructors touch Unity textures, so only these synthetic test fixtures bypass them.
-$testDef = [Runtime.CompilerServices.RuntimeHelpers]::GetUninitializedObject($thingDefType)
+$testDef = [Runtime.Serialization.FormatterServices]::GetUninitializedObject($thingDefType)
 $assembly.GetType('Verse.Def').GetField('defName').SetValue($testDef,'Deterrence_TestNaturalOrgan')
 $thingDefType.GetField('thingClass').SetValue($testDef,$thingType)
 $defListType = [System.Collections.Generic.List``1].MakeGenericType($thingDefType)
@@ -108,7 +108,7 @@ $setupType.GetMethod('InstallOn').Invoke($null,$installArgs) | Out-Null
 if ($thingDefType.GetField('comps').GetValue($testDef).Count -ne 1) { throw 'Duplicate provenance comps added' }
 $testItems = @()
 for ($index=0; $index -lt 3; $index++) {
-    $item = [Runtime.CompilerServices.RuntimeHelpers]::GetUninitializedObject($thingType)
+    $item = [Runtime.Serialization.FormatterServices]::GetUninitializedObject($thingType)
     $baseThingType = $assembly.GetType('Verse.Thing')
     $baseThingType.GetField('def').SetValue($item,$testDef)
     $baseThingType.GetField('stackCount').SetValue($item,1)
@@ -136,7 +136,7 @@ if ([Math]::Abs($freshSettings.Rule('remains:animal',1,$true).BaseAmount - 0.4) 
 
 $listingType = $assembly.GetType('Verse.Listing_Standard')
 $baseListingType = $assembly.GetType('Verse.Listing')
-$listing = [Runtime.CompilerServices.RuntimeHelpers]::GetUninitializedObject($listingType)
+$listing = [Runtime.Serialization.FormatterServices]::GetUninitializedObject($listingType)
 $unityCore = [Reflection.Assembly]::LoadFrom((Join-Path $managed 'UnityEngine.CoreModule.dll'))
 $rectType = $unityCore.GetType('UnityEngine.Rect')
 $listingRect = [Activator]::CreateInstance($rectType,[object[]]@([float]0,[float]0,[float]400,[float]40))
@@ -571,8 +571,8 @@ if ($keptBody.Balance -ne 500) { throw 'Faction and Global share a mutable ledge
 
 $raidPointsType = $modAssembly.GetType('Deterrence.FactionRaidPoints')
 $parmsType = $assembly.GetType('RimWorld.IncidentParms')
-$raidWorker = [Runtime.CompilerServices.RuntimeHelpers]::GetUninitializedObject($assembly.GetType('RimWorld.IncidentWorker_RaidEnemy'))
-$map = [Runtime.CompilerServices.RuntimeHelpers]::GetUninitializedObject($assembly.GetType('Verse.Map'))
+$raidWorker = [Runtime.Serialization.FormatterServices]::GetUninitializedObject($assembly.GetType('RimWorld.IncidentWorker_RaidEnemy'))
+$map = [Runtime.Serialization.FormatterServices]::GetUninitializedObject($assembly.GetType('Verse.Map'))
 $assembly.GetType('Verse.Map').GetField('uniqueID',$flags).SetValue($map,[int]42)
 $parms = [Activator]::CreateInstance($parmsType)
 $parms.target = $map
@@ -602,11 +602,15 @@ try {
     $copy.points = 1400
     $end.Invoke($null,@($frame,$false)) | Out-Null
     if ($copy.points -ne 700) { throw 'Failed raid attempt did not restore original points' }
+    # Raid skip and own-dead weighting still need the budget with faction overrides off.
     $globalSettings.FactionOverridesEnabled = $false
-    if ($null -ne $begin.Invoke($null,@($raidWorker,$copy))) { throw 'Turning faction overrides off did not bypass sizing' }
+    $offFrame = $begin.Invoke($null,@($raidWorker,$copy))
+    if ($null -eq $offFrame) { throw 'Storyteller budget was not tracked with faction overrides off' }
+    $end.Invoke($null,@($offFrame,$true)) | Out-Null
+    if ($copy.points -ne 700) { throw 'An attempt with nothing applied changed the raid points' }
 } finally {
     $modSettingsField.SetValue($null,$originalSettings)
 }
-'PASS raid budget provenance, Randy/copy tracking, quest bypass, and failed-attempt rollback'
+'PASS raid budget provenance, Randy/copy tracking, quest bypass, failed-attempt rollback, and tracking with overrides off'
 
 

@@ -349,7 +349,7 @@ internal static class Program
         Check("menu section order follows the description", () =>
         {
             string actual = string.Join(",", Enum.GetNames<SettingsSection>());
-            Require(actual == "Formula,Remains,Reputation,Hazards,Curves,Summary,Misc,Presets", "Documentation/menu order mismatch");
+            Require(actual == "Formula,Remains,Reputation,Hazards,Curves,Summary,Effects,Presets", "Documentation/menu order mismatch");
         });
         Check("illness migration removes active and recovering legacy sources only", () =>
         {
@@ -590,7 +590,7 @@ internal static class Program
             Equal(40000, SourceMath.AdjustedThreatWealth(100000,20000,true,SourceMath.BiomeMultiplier(0.25,0.5,true)));
             Equal(0, SourceMath.AdjustedThreatWealth(100000,200000,true,0.5));
         });
-        Check("Misc surface correction remains independent of both formula switches", () =>
+        Check("Effects surface correction remains independent of both formula switches", () =>
         {
             float gameWealth = CreditMath.EffectiveWealth(100000, SourceMath.SurfaceDiscount(10000,0));
             Equal(90000, SourceMath.AdjustedThreatWealth(gameWealth,20000,false,1));
