@@ -1,4 +1,4 @@
-# Deterrence 0.13.1
+# Deterrence 0.14.0
 
 Danger and its lingering reputation reduce the wealth used to size outside threats. Actual asset prices stay unchanged.
 

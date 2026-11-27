@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.14.0
 
 - Misc is now **Effects**: smoothed surfaces, quests, who comes to the colony, and how raiders fight.
 - Added **Apply to quests** under Effects. When it is off, quests and quest sites size their threats and rewards from the game's own threat wealth.

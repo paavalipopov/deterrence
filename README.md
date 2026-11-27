@@ -20,7 +20,7 @@ Open the shield beside **World** to see how much each meter contributes and whic
 
 Graves, sarcophagi, and stockpiles also gain three filters under **Storage → Corpses → Humanlike corpses**. Choose which corpses to accept by status at death, current faction relations, or individual faction. All three start on **Any**.
 
-## Install 0.13.1
+## Install 0.14.0
 
 1. Download this repository using **Code → Download ZIP** and extract it.
 2. Copy the inner `Deterrence` folder into your RimWorld `Mods` folder. The installed path should end in `Mods/Deterrence/About/About.xml`.

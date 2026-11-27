@@ -280,7 +280,7 @@ For an ordinary enemy raid, RimWorld draws from eligible factions. The draw is w
 
 In **Presets**, type a name and select **Save new**. Pick a saved preset to load, rename, overwrite, or delete it. Presets include Global settings and faction overrides. Deterrence balances and wealth history stay with the save.
 
-This guide describes **Deterrence 0.13.1**, formerly Antiwealth.
+This guide describes **Deterrence 0.14.0**, formerly Antiwealth.
 '''
 
 (ROOT/'Deterrence-Guide.md').write_text(guide, encoding='utf-8')

@@ -18,7 +18,7 @@ namespace Deterrence
             LegacyIdentity.ImportSettings(content.FolderName);
             Settings = GetSettings<DeterrenceSettings>();
             Settings.Sanitize();
-            Log.Message("[Deterrence] Loaded 0.13.1.");
+            Log.Message("[Deterrence] Loaded 0.14.0.");
         }
 
         // Patch class by class, so one missing game method leaves the other patches active.
