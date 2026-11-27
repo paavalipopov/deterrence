@@ -2,7 +2,15 @@
 
 ## Unreleased
 
-- Added **Apply to quests** under Formula. When it is off, quests and quest sites size their threats and rewards from the game's own threat wealth.
+- Misc is now **Effects**: smoothed surfaces, quests, who comes to the colony, and how raiders fight.
+- Added **Apply to quests** under Effects. When it is off, quests and quest sites size their threats and rewards from the game's own threat wealth.
+- Added the built-in **Smart** preset. Waster pirates ignore pollution and toxic hazards, insects ignore remains and reputation, and mechanoids ignore hazards.
+- Faction profiles now also size infestations (Insect) and mech clusters and crashed ship parts (Mechanoid).
+- Remains pass the total value of kept bodies through the hazard growth curve, so large graveyards count less per body. Existing colonies see their remains total recalculated on load. A removed body fades its marginal contribution.
+- Added **Turn away arrivals**: trader caravans, visitors, travelers and wanderers are skipped with chance (1 − r)^p, where r = Threat / Base.
+- Added **Raid skip strength**: human enemy raids are called off with chance s × (1 − r)^p, using the raiding faction's r.
+- Added **Retreat point at reference reputation**: raiders retreat after fewer losses as the colony's reputation grows.
+- Added **Weight of a faction's own dead**: a raiding faction counts its own fallen members' remains more.
 - Bodies recorded before the mod was enabled now count by their status at death. Older bodies infer that status from faction relations when first seen.
 - Maddened or scaria animals count only when they are wild.
 - The hourly refresh no longer scans every item for prisoner organs or every thing for hives. The smoothed-surface scan uses floor values computed once.

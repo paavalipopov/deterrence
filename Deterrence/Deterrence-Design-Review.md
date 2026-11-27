@@ -18,7 +18,7 @@ Adjusted threat wealth = max(0, Game threat wealth - Deterrence) x biome factor 
 
 Island detection follows connected land on the world map. It caches water-enclosed landmasses up to 350 tiles. The user limit defaults to 10 and can be changed independently for each faction. With Require sole settlement enabled, the current settlement list is checked against the cached tiles. An additional settlement from any faction disqualifies the island. World edges leave the factor at 1.
 
-Misc adjusts Game threat wealth before the formula, independently of its switches. Smoothed surface multiplier defaults to 0, which removes their counted contribution; 1 is vanilla. It applies to smoothed floors and player-owned smoothed walls, including child pocket-map wealth, using vanilla's half-value building weighting. Asset prices/economic wealth are unchanged. Surface scans run hourly or on Apply while the multiplier is below 1, using floor values computed once; no surface balance accumulates or fades.
+Effects > Base threat adjusts Game threat wealth before the formula, independently of its switches. Smoothed surface multiplier defaults to 0, which removes their counted contribution; 1 is vanilla. It applies to smoothed floors and player-owned smoothed walls, including child pocket-map wealth, using vanilla's half-value building weighting. Asset prices/economic wealth are unchanged. Surface scans run hourly or on Apply while the multiplier is below 1, using floor values computed once; no surface balance accumulates or fades.
 
 ## Interaction decisions
 
@@ -32,7 +32,7 @@ Summary displays the selected scope's formula above standard examples. Examples 
 
 Curves separates Hazard growth and Fading, explicitly names K and the duration exponent, and displays calibration examples. Hazard overlap, Repeated acts, and Combined plot modes use the existing calculation model. Scenario inputs are optional and do not edit actual event weights. Source-specific previews clone the configured rule and respect availability/category switches.
 
-Numeric controls accept typing, +/- and sliders, preserving valid non-round values on passive display. Reset amount and colony scaling preserves the independent enable switch. Source selection closes optional details and resets its scroll position. Single-column scrolling is retained throughout; Misc shows the last map refresh's surface discount.
+Numeric controls accept typing, +/- and sliders, preserving valid non-round values on passive display. Reset amount and colony scaling preserves the independent enable switch. Source selection closes optional details and resets its scroll position. Single-column scrolling is retained throughout; Effects shows the last map refresh's surface discount.
 
 
 Formula renders the active terms and plots the biome curve together with the qualifying-island multiplier. Its bottom section holds Colony size scaling, Faction overrides, and Open meters. The dock uses the native minimized button style with a shield badge after World. Its existing definition still opens the meter and history panel.
@@ -49,9 +49,9 @@ Bodies, pollution, and hives are colony observations. Players can customize thei
 
 ## Faction overrides
 
-Profiles are keyed by faction definition so they carry between worlds with the same faction type. Store only the fields changed by the player. Formula controls, individual rule fields, Curves, and Misc inherit independently. Returning a value to Global clears its override. Reset to Global removes the whole profile across all tabs. Turning the feature off gives every faction the Global behavior and retains the profile settings.
+Profiles are keyed by faction definition so they carry between worlds with the same faction type. Store only the fields changed by the player. Formula controls, individual rule fields, Curves, and Effects inherit independently. Returning a value to Global clears its override. Reset to Global removes the whole profile across all tabs. Turning the feature off gives every faction the Global behavior and retains the profile settings.
 
-Profiles with custom source or growth/fade fields get independent balances. They start from the existing Global snapshot, measure the same colony sources, and process new events using their resolved rules. Existing fade clocks are copied. Profile histories are saved with the colony while the choices are saved in mod settings. Global-only wealth controls and faction profiles with only Formula or Misc differences reuse the Global ledger.
+Profiles with custom source or growth/fade fields get independent balances. They start from the existing Global snapshot, measure the same colony sources, and process new events using their resolved rules. Existing fade clocks are copied. Profile histories are saved with the colony while the choices are saved in mod settings. Global-only wealth controls and faction profiles with only Formula or Effects differences reuse the Global ledger.
 
 RimWorld chooses a faction using its ordinary starting budget. Once that choice succeeds, the mod compares the Global and faction budgets using RimWorld's own point calculation, applies their ratio, and returns control before strategy and arrival mode resolution. This preserves multipliers already applied to the storyteller budget, including Randy's. Explicit quest or event budgets keep their assigned points. Custom raid callers need to use the recognized storyteller path for the override to apply.
 
