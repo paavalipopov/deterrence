@@ -29,7 +29,7 @@ namespace Deterrence
             Widgets.Label(heading,
                 "Wealth and threat over time. Hover a curve for values.");
             TooltipHandler.TipRegion(heading,
-                "Actual wealth counts all assets. Base threat counts buildings at half value and includes Effects adjustments. Threat also includes deterrence and terrain factors. Old samples retain their recorded values.");
+                "Actual wealth counts all assets. Base threat counts buildings at half value and includes Options adjustments. Threat also includes deterrence and terrain factors. Old samples retain their recorded values.");
             bool e = economy, v = vanilla, a = adjusted, c = credit;
             float half = rect.width / 2;
             Widgets.CheckboxLabeled(new Rect(rect.x, rect.y + 49, half - 8, 28), "Actual wealth", ref economy);

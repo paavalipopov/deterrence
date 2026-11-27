@@ -15,7 +15,7 @@ namespace Deterrence
         public bool Reputation = true;
         // Quests and quest sites read world threat wealth; this decides whether the formula applies there.
         public bool AdjustQuests = true;
-        // Effects beyond threat size. All are global and off at their defaults.
+        // Options beyond threat size. All are global and off at their defaults.
         public bool DeterArrivals;
         public float RaidSkipStrength;
         public float SkipExponent = 2;

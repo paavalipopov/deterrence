@@ -81,7 +81,7 @@ namespace Deterrence
             if (tab == (int)SettingsSection.Formula) DrawFormula(content, effective, settings);
             else if (tab == (int)SettingsSection.Curves) DrawCurves(content, effective);
             else if (tab == (int)SettingsSection.Summary) DrawSummary(content, effective);
-            else if (tab == (int)SettingsSection.Effects) DrawEffects(content, effective, settings);
+            else if (tab == (int)SettingsSection.Options) DrawOptions(content, effective, settings);
             else DrawSources(content, effective);
             effective.Sanitize();
             if (before != null) SaveFactionEdits(settings, overrides, before, effective);
@@ -131,15 +131,9 @@ namespace Deterrence
             listing.Label("Hazards: pollution, regional devices, toxic weather, hives, and outdoor extremes.");
             listing.Label("Curves: change growth and fading.");
             listing.Label("Summary: compare contributions by source and review the current formula.");
-            listing.Label("Effects: smoothed surfaces, quests, who comes to the colony, and how raiders fight.");
+            listing.Label("Options: colony size scaling, faction overrides, smoothed surfaces, quests, arrivals and raiders.");
             listing.Label("Presets: save or restore a named set of settings.");
             listing.GapLine();
-            SectionTitle(listing, "Options");
-            HelpUI.Checkbox(listing, "Colony size scaling", ref global.ShowAdvancedColonyScaling,
-                "Shows controls for colony size scaling, sample colonist inputs, and extra Summary columns. Existing scaling applies with the controls hidden.");
-            if (factionKey == null)
-                HelpUI.Checkbox(listing, "Faction overrides", ref global.FactionOverridesEnabled,
-                    "Shows a faction selector on settings tabs. Overrides apply after the game chooses a faction for an ordinary enemy raid. Infestations use the Insect profile; mech clusters and crashed ship parts use the Mechanoid profile.");
             if (Current.Game != null && listing.ButtonText("Open meters")) OpenMeters();
             generalHeight = listing.CurHeight + 20; listing.End(); Widgets.EndScrollView();
         }
@@ -180,11 +174,23 @@ namespace Deterrence
             DeterrenceGraphs.Draw(listing.GetRect(210), terrainCurves, 0, 100, "Biome settlement weight (%)", 100);
         }
 
-        private void DrawEffects(Rect rect, DeterrenceSettings settings, DeterrenceSettings global)
+        private void DrawOptions(Rect rect, DeterrenceSettings settings, DeterrenceSettings global)
         {
             Rect view = new Rect(0, 0, rect.width - 20, Math.Max(rect.height, miscHeight));
             Widgets.BeginScrollView(rect, ref miscScroll, view);
             var listing = HelpUI.SingleColumn(new Listing_Standard()); listing.Begin(view);
+            HelpUI.Checkbox(listing, "Colony size scaling", ref global.ShowAdvancedColonyScaling,
+                "Shows controls for colony size scaling, sample colonist inputs, and extra Summary columns. Existing scaling applies with the controls hidden.", true);
+            if (factionKey == null)
+            {
+                listing.Gap(6);
+                HelpUI.Checkbox(listing, "Faction overrides", ref global.FactionOverridesEnabled,
+                    "Shows a faction selector on settings tabs. Overrides apply after the game chooses a faction for an ordinary enemy raid. Infestations use the Insect profile; mech clusters and crashed ship parts use the Mechanoid profile.", true);
+                listing.Gap(6);
+                HelpUI.Checkbox(listing, "Apply to quests", ref global.AdjustQuests,
+                    "Quests and quest sites take threat points from the combined threat wealth of your colonies. Their rewards scale with those points. When on, the formula also lowers quest threats and rewards. When off, quests use the game's own threat wealth.", true);
+            }
+            listing.GapLine();
             SectionTitle(listing, "Base threat");
             HelpUI.Equation(listing, "Surface", "Surface contribution = counted value × multiplier",
                 "Counted value is the contribution of smoothed floors and walls to the game's base threat wealth.");
@@ -196,7 +202,7 @@ namespace Deterrence
                     .SurfaceDiscountFor(Find.CurrentMap, settings.SmoothedSurfaceMultiplier);
                 listing.Label("Current map surface discount: " + F(discount) + " (last refresh).");
             }
-            if (factionKey == null) DrawGlobalEffects(listing, global);
+            if (factionKey == null) DrawGlobalOptions(listing, global);
             else
             {
                 listing.Gap();
@@ -205,13 +211,8 @@ namespace Deterrence
             miscHeight = listing.CurHeight + 20; listing.End(); Widgets.EndScrollView();
         }
 
-        private void DrawGlobalEffects(Listing_Standard listing, DeterrenceSettings global)
+        private void DrawGlobalOptions(Listing_Standard listing, DeterrenceSettings global)
         {
-            listing.GapLine();
-            SectionTitle(listing, "Quests");
-            HelpUI.Checkbox(listing, "Apply to quests", ref global.AdjustQuests,
-                "Quests and quest sites take threat points from the combined threat wealth of your colonies. Their rewards scale with those points. When on, the formula also lowers quest threats and rewards. When off, quests use the game's own threat wealth.");
-
             listing.GapLine();
             SectionTitle(listing, "Who comes");
             listing.Label("r = Threat / Base for a colony map. It is 1 without deterrence and falls toward 0 as deterrence and the terrain factors remove threat wealth.");
