@@ -168,14 +168,14 @@ Open **Formula** to toggle deterrence, the biome factor and the island factor in
 | Formula > Biome strength | The factor is w ^ strength. Here w is the biome's settlement selection weight, limited to 0 through 1. Strength ranges from 0 to 3. At 0 the factor is 1. The default 0.5 takes the square root. At 1 it equals the weight. At 3 a weight of 0.5 gives a factor of 0.125. |
 | Formula > Island factor | A 0–1 multiplier for water-enclosed landmasses within the tile limit. The limit defaults to 180 world tiles and accepts 1–350. By default, the colony must be the island's sole settlement. The multiplier defaults to 0.2. At 0 the wealth contribution is zero and the game's other threat factors still apply. |
 | Options > Apply to quests | On by default. Quests and quest sites take their threat points, and the rewards that scale with them, from the combined threat wealth of your colonies. Turn it off to size quests from the game's own threat wealth. |
-| Options > Threat ratio (r) | r = Threat / Base, computed for the faction that is coming: its profile, and its own dead when Own dead weight is above 1. Wanderers have no faction and use the colony's r. r is 1 without deterrence. |
-| Options > Enable arrival frequency | Off by default. Storyteller arrivals on colony maps happen at vanilla rate × (1 − s (1 − r)^p). Quest arrivals, drop pods and orbital traders keep their usual rate. |
-| Options > Raids (s) | 50% by default. The largest share of human enemy raids turned away, reached at r = 0. Uses r for the raiding faction. |
-| Options > Traders and visitors (s) | 50% by default. The same for trader caravans, visitor groups, travelers and wanderers. Each uses r for its faction. |
-| Options > Shape (p) | 2 by default. Shared by arrival frequency and raider retreat. At 1 the effect grows in proportion to 1 − r; above 1, mild deterrence barely matters. |
-| Options > Enable raider retreat | Off by default. Raiders flee after losing L × (1 − s (1 − r)^p) of their group, where L is the faction's usual 40–70%. Raids that never flee, such as mechanoids and insects, are unaffected. |
-| Options > Retreat (s) | 50% by default. The largest cut to the retreat point, reached at r = 0. |
-| Options > Own dead weight (w) | 1 by default. A faction counts the remains of its own members w times before the remains curve. |
+| Options > Threat ratio (r) | r = Threat / Base, computed for the faction that is coming: its profile, and its own dead when Remains > Weight of own dead is above 1. Wanderers have no faction and use the colony's r. r is 1 without deterrence. |
+| Options > Deter outsider arrivals | Off by default. Storyteller arrivals on colony maps happen at vanilla rate × (1 − s (1 − r)^p). Quest arrivals, drop pods and orbital traders keep their usual rate. |
+| Options > Max reduction (s) > Raids | 50% by default. The most human enemy raids can drop, reached at r = 0. Uses r for the raiding faction. |
+| Options > Max reduction (s) > Traders and visitors | 50% by default. The same for trader caravans, visitor groups, travelers and wanderers. Each uses r for its faction. |
+| Options > Shape (p) | 2 by default. Shared by arrivals and retreat. At 1 the effect grows steadily as r falls; above 1, light deterrence does little and most of the effect comes near r = 0. |
+| Options > Raiders retreat sooner | Off by default. Raiders flee once their losses reach vanilla threshold × (1 − s (1 − r)^p). The vanilla threshold is 40–70%, depending on the faction. Raids that never flee, such as mechanoids and insects, are unaffected. |
+| Options > Raiders retreat sooner > Max reduction (s) | 50% by default. The most the retreat threshold can drop, reached at r = 0. |
+| Remains > Weight of own dead | 1 by default. When a faction raids, visits or decides whether to retreat, bodies of its own members count this many times before the remains curve. Global only. |
 | Options > Smoothed surface wealth | Multiplier for smoothed floors/walls in **Game threat wealth**, before the formula. **The default of 0 excludes their contribution. Set 1 for vanilla weighting.** |
 
 The terrain factors apply directly. Mainland coasts and land that reaches a partial world's edge use island factor 1. The surface discount respects vanilla's half-value weighting of building wealth and refreshes hourly or when you press **Apply & save**.

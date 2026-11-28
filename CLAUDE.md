@@ -48,16 +48,16 @@ Run these from `C:\RimTest\repo\Deterrence`. `Build.ps1` and `Tools\Inspect-Api.
     - Built-in Smart preset: waster pirates ignore pollution and toxic hazards, insects ignore remains and reputation, mechanoids ignore hazards.
     - Faction profiles also size infestations (Insect) and mech clusters and crashed ship parts (Mechanoid).
     - Remains pass the total of kept bodies through the hazard growth curve. A removed body fades its marginal contribution.
-    - Options define r = Threat / Base per arriving faction (profile plus own-dead weight w). Wanderers use the colony's r.
-    - Arrival frequency: rate = vanilla x (1 - s (1 - r)^p), with s for raids and s for traders and visitors, and a shared p.
-    - Raider retreat: retreat point = L x (1 - s (1 - r)^p), where L is the faction's usual 40-70%.
+    - Options define r = Threat / Base per arriving faction (profile plus Remains > Weight of own dead). Wanderers use the colony's r.
+    - Deter outsider arrivals: rate = vanilla x (1 - s (1 - r)^p), with s for raids and s for traders and visitors, and a shared p.
+    - Raiders retreat sooner: retreat threshold = vanilla threshold x (1 - s (1 - r)^p), where the vanilla threshold is 40-70%.
     - Test-bed support in `Build.ps1` and `Tools`.
 - `Assemblies\Deterrence.dll` is current, and the Build workflow passes the unit and integration tests.
 - Not yet verified: the headless storage test and the in-game checks below.
 - In-game checks:
     - Load the Smart preset, then spawn an infestation and a waster pirate raid in Dev mode. Their points should differ from Global.
-    - With Dev mode on and arrival frequency enabled, the log reports each skipped raid and arrival.
-    - With raider retreat enabled and heavy deterrence, a raid should flee after fewer losses than usual.
+    - With Dev mode on and Deter outsider arrivals enabled, the log reports each skipped raid and arrival.
+    - With Raiders retreat sooner enabled and heavy deterrence, a raid should flee after fewer losses than usual.
     - Harvest a prisoner organ, save and reload, and send it out and back with a caravan. It should keep counting.
     - The surface discount should match the value before the precomputed floor table.
 - Open work:

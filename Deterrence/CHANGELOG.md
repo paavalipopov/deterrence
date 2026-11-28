@@ -9,9 +9,9 @@
 - Added the built-in **Smart** preset. Waster pirates ignore pollution and toxic hazards, insects ignore remains and reputation, and mechanoids ignore hazards.
 - Faction profiles now also size infestations (Insect) and mech clusters and crashed ship parts (Mechanoid).
 - Remains pass the total value of kept bodies through the hazard growth curve, so large graveyards count less per body. Existing colonies see their remains total recalculated on load. A removed body fades its marginal contribution.
-- Added **Arrival frequency** under Options. Raids, and traders and visitors, arrive at vanilla rate × (1 − s (1 − r)^p), where r = Threat / Base for the faction that is coming. Off by default.
-- Added **Raider retreat**. Raiders flee after losing L × (1 − s (1 − r)^p) of their group, where L is their faction's usual 40–70%. Off by default.
-- Added **Own dead weight** (w): a faction counts the remains of its own members w times when it raids, visits or decides to retreat.
+- Added **Deter outsider arrivals** under Options. Raids, and traders and visitors, arrive at vanilla rate × (1 − s (1 − r)^p), where r = Threat / Base for the faction that is coming. Off by default.
+- Added **Raiders retreat sooner**. Raiders flee once their losses reach vanilla threshold × (1 − s (1 − r)^p); the vanilla threshold is 40–70%, depending on the faction. Off by default.
+- Added **Weight of own dead** on the Remains tab: a faction counts the remains of its own members this many times when it raids, visits or decides whether to retreat.
 - Bodies recorded before the mod was enabled now count by their status at death. Older bodies infer that status from faction relations when first seen.
 - Maddened or scaria animals count only when they are wild.
 - The hourly refresh no longer scans every item for prisoner organs or every thing for hives. The smoothed-surface scan uses floor values computed once.
