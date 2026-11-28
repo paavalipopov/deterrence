@@ -220,34 +220,28 @@ namespace Deterrence
             HelpUI.ThreatEquation(listing, global);
             listing.Label("Base is the game's threat wealth after the surface adjustment above. Deterrence is Remains + Reputation + Hazards.");
             HelpUI.Equation(listing, "ThreatRatio", "r = Threat / Base",
-                "Each arrival uses the profile of the faction that sends it, and how much that faction weighs its own dead. Wanderers have no faction and use the colony's r.");
+                "Each arrival uses the profile of the faction that sends it, and Weight of own dead from the Remains tab. Wanderers have no faction and use the colony's r.");
             listing.Label("r is 1 without deterrence and falls toward 0 as deterrence and the terrain factors remove threat wealth. It is computed for the faction that is coming.");
 
             listing.GapLine();
-            HelpUI.Checkbox(listing, "Enable arrival frequency", ref global.ArrivalFrequency,
+            HelpUI.Checkbox(listing, "Deter outsider arrivals", ref global.ArrivalFrequency,
                 "Deterred colonies receive fewer raids, traders and visitors. The size of each arrival still follows the formula.", true);
             if (global.ArrivalFrequency) DrawArrivalFrequency(listing, global);
 
             listing.GapLine();
-            HelpUI.Checkbox(listing, "Enable raider retreat", ref global.RaiderRetreat,
+            HelpUI.Checkbox(listing, "Raiders retreat sooner", ref global.RaiderRetreat,
                 "Raiders flee after fewer losses from a deterred colony.", true);
             if (global.RaiderRetreat) DrawRaiderRetreat(listing, global);
-
-            listing.GapLine();
-            SectionTitle(listing, "Faction memory");
-            HelpUI.Equation(listing, "FactionMemory", "Counted remains = G(B + (w − 1) B_F)",
-                "Used for a faction's raids, visits and retreat.");
-            listing.Label("B is the value of all kept bodies before the remains curve G. B_F is the part that belonged to the faction that is coming. At w = 1 every body counts the same.");
-            GlobalSlider(listing, "Own dead weight", ref global.OwnDeadWeight, 1, 5, 0.1f, symbol: "w");
         }
 
         private void DrawArrivalFrequency(Listing_Standard listing, DeterrenceSettings global)
         {
             HelpUI.Equation(listing, "ArrivalRate", "Rate = vanilla rate × (1 − s (1 − r)^p)",
                 "Applies to storyteller arrivals on colony maps. Quest arrivals, drop pods and orbital traders keep their usual rate.");
-            listing.Label("s is the largest share of arrivals turned away, reached at r = 0. p shapes the response: at 1 the rate falls in proportion to 1 − r; above 1, mild deterrence barely changes it.");
-            GlobalSlider(listing, "Raids", ref global.RaidSkipStrength, 0, 1, 0.05f, fraction: true, symbol: "s");
-            GlobalSlider(listing, "Traders and visitors", ref global.VisitorSkipStrength, 0, 1, 0.05f, fraction: true, symbol: "s");
+            listing.Label("s is the most the rate can drop: at 50%, a fully deterred colony (r = 0) gets half as many arrivals. p is the shape: at 1 the effect grows steadily as r falls; above 1, light deterrence does little and most of the effect comes near r = 0.");
+            listing.Label("Max reduction (s)");
+            GlobalSlider(listing, "Raids", ref global.RaidSkipStrength, 0, 1, 0.05f, fraction: true);
+            GlobalSlider(listing, "Traders and visitors", ref global.VisitorSkipStrength, 0, 1, 0.05f, fraction: true);
             GlobalSlider(listing, "Shape", ref global.SkipExponent, 0.25f, 4, 0.05f, symbol: "p");
             listing.Label("At r = 0.5: raids at " + SourceMath.RateFactor(0.5, global.RaidSkipStrength, global.SkipExponent).ToString("P0")
                 + " and traders and visitors at " + SourceMath.RateFactor(0.5, global.VisitorSkipStrength, global.SkipExponent).ToString("P0")
@@ -262,15 +256,16 @@ namespace Deterrence
                     RatioSeries("Traders and visitors", DeterrenceGraphs.AdjustedColor, r => SourceMath.RateFactor(r, global.VisitorSkipStrength, global.SkipExponent)) };
             }
             listing.Label("Arrival rate (% of vanilla)");
-            DeterrenceGraphs.Draw(listing.GetRect(210), rateCurves, 0, 100, "r (%)", 100);
+            DeterrenceGraphs.Draw(listing.GetRect(210), rateCurves, 0, 100, "Threat ratio r (%)", 100);
+            listing.Label("100% = no deterrence, 0% = fully deterred.");
         }
 
         private void DrawRaiderRetreat(Listing_Standard listing, DeterrenceSettings global)
         {
-            HelpUI.Equation(listing, "RetreatPoint", "Retreat point = L × (1 − s (1 − r)^p)",
+            HelpUI.Equation(listing, "RetreatPoint", "Retreat threshold = vanilla threshold × (1 − s (1 − r)^p)",
                 "Raids that never flee, such as mechanoids and insects, are unaffected.");
-            listing.Label("L is the share of its group a raid normally loses before fleeing: 40–70%, depending on the faction. r is the raiding faction's r, and p is shared with arrival frequency.");
-            GlobalSlider(listing, "Retreat", ref global.RetreatStrength, 0, 1, 0.05f, fraction: true, symbol: "s");
+            listing.Label("The vanilla threshold is the share of its group a raid loses before fleeing, 40–70% depending on the faction. r and p are the same as for arrivals.");
+            GlobalSlider(listing, "Max reduction", ref global.RetreatStrength, 0, 1, 0.05f, fraction: true, symbol: "s");
             if (!global.ArrivalFrequency) GlobalSlider(listing, "Shape", ref global.SkipExponent, 0.25f, 4, 0.05f, symbol: "p");
             listing.Label("At r = 0.5, a raid that would flee at 50% losses flees at "
                 + SourceMath.RetreatPoint(0.5, 0.5, global.RetreatStrength, global.SkipExponent).ToString("P0") + ".");
@@ -280,11 +275,12 @@ namespace Deterrence
             {
                 retreatSignature = signature;
                 retreatCurves = new List<SimpleCurveDrawInfo> {
-                    RatioSeries("Usually 70%", DeterrenceGraphs.VanillaColor, r => SourceMath.RetreatPoint(0.7, r, global.RetreatStrength, global.SkipExponent)),
-                    RatioSeries("Usually 40%", DeterrenceGraphs.CreditColor, r => SourceMath.RetreatPoint(0.4, r, global.RetreatStrength, global.SkipExponent)) };
+                    RatioSeries("Vanilla 70%", DeterrenceGraphs.VanillaColor, r => SourceMath.RetreatPoint(0.7, r, global.RetreatStrength, global.SkipExponent)),
+                    RatioSeries("Vanilla 40%", DeterrenceGraphs.CreditColor, r => SourceMath.RetreatPoint(0.4, r, global.RetreatStrength, global.SkipExponent)) };
             }
-            listing.Label("Losses before retreat (% of the group)");
-            DeterrenceGraphs.Draw(listing.GetRect(210), retreatCurves, 0, 100, "r (%)", 100);
+            listing.Label("Retreat threshold (% of group lost)");
+            DeterrenceGraphs.Draw(listing.GetRect(210), retreatCurves, 0, 100, "Threat ratio r (%)", 100);
+            listing.Label("100% = no deterrence, 0% = fully deterred.");
         }
 
         // Plot a share against r in percent, from 0 to 100.

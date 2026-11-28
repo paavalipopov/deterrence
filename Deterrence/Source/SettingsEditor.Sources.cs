@@ -26,6 +26,7 @@ namespace Deterrence
                 HelpUI.Checkbox(header, "Enable organ stock", ref organs.Enabled,
                     "Counts organs harvested locally from prisoners while the stock is kept.", true);
                 header.Label("Bodies fade when removed. Kept organ value ends when the stock leaves.");
+                if (factionKey == null) GlobalSlider(header, "Weight of own dead", ref settings.OwnDeadWeight, 1, 5, 0.1f);
             }
             else
             {

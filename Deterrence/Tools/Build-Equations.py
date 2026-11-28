@@ -263,25 +263,9 @@ def options():
     equation.save("ArrivalRate")
 
     equation = Equation()
-    equation.text("Retreat point = ")
-    equation.text("L", VARIABLE)
-    equation.text(" × ")
+    equation.text("Retreat threshold = vanilla threshold × ")
     reduced(equation)
     equation.save("RetreatPoint")
-
-    equation = Equation()
-    equation.text("Counted remains = ")
-    equation.text("G", VARIABLE)
-    equation.text("(")
-    equation.text("B", VARIABLE)
-    equation.text(" + (")
-    equation.text("w", VARIABLE)
-    equation.text(" − 1) ")
-    equation.text("B", VARIABLE)
-    equation.text("F", POWER_VARIABLE, baseline=26)
-    equation.x += 2 * SCALE
-    equation.text(")")
-    equation.save("FactionMemory")
 
 
 if __name__ == "__main__":
